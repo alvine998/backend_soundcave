@@ -120,7 +120,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           source: "."
-          target: "/opt/soundcave"
+          target: "/var/www/backend_soundcave"
           strip_components: 0
           rm: false
           exclude: |
