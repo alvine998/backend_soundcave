@@ -62,8 +62,13 @@ func main() {
 		port = "6002"
 	}
 
-	log.Printf("Server berjalan di port %s", port)
-	if err := app.Listen(":" + port); err != nil {
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "0.0.0.0" // Default untuk Docker
+	}
+
+	log.Printf("Server berjalan di %s:%s", host, port)
+	if err := app.Listen(host + ":" + port); err != nil {
 		log.Fatal("Gagal menjalankan server:", err)
 	}
 }
