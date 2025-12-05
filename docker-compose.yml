@@ -1,28 +1,6 @@
 version: '3.8'
 
 services:
-  # MySQL Database
-  mysql:
-    image: mysql:8.0
-    container_name: soundcave_mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: soundcave
-      MYSQL_USER: soundcave_user
-      MYSQL_PASSWORD: soundcave_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - soundcave_network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Backend API
   backend:
     build:
@@ -30,42 +8,25 @@ services:
       dockerfile: Dockerfile
     container_name: soundcave_backend
     restart: unless-stopped
-    ports:
-      - "6002:6002"
-    environment:
-      # Server Configuration
-      PORT: 6002
-      
-      # Database Configuration
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: soundcave_user
-      DB_PASSWORD: soundcave_password
-      DB_NAME: soundcave
-      
-      # JWT Configuration
-      JWT_SECRET: your-secret-key-change-in-production
-      
-      # Firebase Configuration
-      FIREBASE_SERVICE_ACCOUNT_KEY: /root/firebase-service-account.json
-      FIREBASE_STORAGE_BUCKET: your-project-id.appspot.com
-      FIREBASE_AUDIENCE: your-firebase-client-id
-      
-      # CORS Configuration
-      CORS_ORIGINS: "*"
+    env_file:
+      - .env
     volumes:
       - ./firebase-service-account.json:/root/firebase-service-account.json:ro
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - soundcave_network
+    # Opsi 1: Menggunakan host network untuk akses MySQL di server Linux
+    # Dengan host network, container bisa akses MySQL di localhost server
+    network_mode: "host"
+    
+    # Opsi 2: Jika MySQL di server dengan IP tertentu, gunakan bridge network
+    # Uncomment bagian ini dan comment network_mode di atas
+    # ports:
+    #   - "6002:6002"
+    # networks:
+    #   - soundcave_network
+    # extra_hosts:
+    #   - "mysql-server:192.168.1.100" # Ganti dengan IP MySQL server
 
-volumes:
-  mysql_data:
-    driver: local
-
-networks:
-  soundcave_network:
-    driver: bridge
+# Jika menggunakan bridge network (Opsi 2), uncomment:
+# networks:
+#   soundcave_network:
+#     driver: bridge
 
