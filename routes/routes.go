@@ -2,6 +2,7 @@ package routes
 
 import (
 	"backend_soundcave/handlers"
+	"backend_soundcave/middleware"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/gofiber/fiber/v2"
@@ -21,6 +22,24 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 
 	// API routes
 	api := app.Group("/api")
+
+	// Auth routes (public)
+	auth := api.Group("/auth")
+	auth.Post("/register", func(c *fiber.Ctx) error {
+		return handlers.RegisterHandler(c, db)
+	})
+	auth.Post("/login", func(c *fiber.Ctx) error {
+		return handlers.LoginHandler(c, db)
+	})
+	auth.Post("/google", func(c *fiber.Ctx) error {
+		return handlers.GoogleAuthHandler(c, db)
+	})
+
+	// Protected routes (require authentication)
+	protected := api.Group("", middleware.AuthMiddleware)
+	protected.Get("/profile", func(c *fiber.Ctx) error {
+		return handlers.GetProfileHandler(c, db)
+	})
 
 	// Image upload routes
 	images := api.Group("/images")

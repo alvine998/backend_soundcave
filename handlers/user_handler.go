@@ -10,26 +10,26 @@ import (
 
 // CreateUserRequest struct untuk request create user
 type CreateUserRequest struct {
-	FullName    string  `json:"full_name" validate:"required"`
-	Email       string  `json:"email" validate:"required,email"`
-	Password    string  `json:"password" validate:"required,min=6"`
-	Phone       *string `json:"phone"`
-	Location    *string `json:"location"`
-	Bio         *string `json:"bio"`
+	FullName     string  `json:"full_name" validate:"required"`
+	Email        string  `json:"email" validate:"required,email"`
+	Password     string  `json:"password" validate:"required,min=6"`
+	Phone        *string `json:"phone"`
+	Location     *string `json:"location"`
+	Bio          *string `json:"bio"`
 	ProfileImage *string `json:"profile_image"`
-	Role        string  `json:"role"`
+	Role         string  `json:"role"`
 }
 
 // UpdateUserRequest struct untuk request update user
 type UpdateUserRequest struct {
-	FullName    *string `json:"full_name"`
-	Email       *string `json:"email" validate:"omitempty,email"`
-	Password    *string `json:"password" validate:"omitempty,min=6"`
-	Phone       *string `json:"phone"`
-	Location    *string `json:"location"`
-	Bio         *string `json:"bio"`
+	FullName     *string `json:"full_name"`
+	Email        *string `json:"email" validate:"omitempty,email"`
+	Password     *string `json:"password" validate:"omitempty,min=6"`
+	Phone        *string `json:"phone"`
+	Location     *string `json:"location"`
+	Bio          *string `json:"bio"`
 	ProfileImage *string `json:"profile_image"`
-	Role        *string `json:"role"`
+	Role         *string `json:"role"`
 }
 
 // CreateUserHandler membuat user baru
@@ -82,15 +82,16 @@ func CreateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	// Buat user baru
+	hashedPasswordStr := string(hashedPassword)
 	user := models.User{
-		FullName:    req.FullName,
-		Email:       req.Email,
-		Password:    string(hashedPassword),
-		Phone:       req.Phone,
-		Location:    req.Location,
-		Bio:         req.Bio,
+		FullName:     req.FullName,
+		Email:        req.Email,
+		Password:     &hashedPasswordStr,
+		Phone:        req.Phone,
+		Location:     req.Location,
+		Bio:          req.Bio,
 		ProfileImage: req.ProfileImage,
-		Role:        role,
+		Role:         role,
 	}
 
 	if err := db.Create(&user).Error; err != nil {
@@ -234,7 +235,8 @@ func UpdateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 				"error":   err.Error(),
 			})
 		}
-		user.Password = string(hashedPassword)
+		hashedPasswordStr := string(hashedPassword)
+		user.Password = &hashedPasswordStr
 	}
 
 	if req.Phone != nil {
@@ -316,4 +318,3 @@ func DeleteUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "User berhasil dihapus",
 	})
 }
-
