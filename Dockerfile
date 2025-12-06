@@ -23,8 +23,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o backend_soundcave
 # Final stage
 FROM alpine:latest
 
-# Install ca-certificates for HTTPS requests
-RUN apk --no-cache add ca-certificates
+# Install ca-certificates for HTTPS requests and curl for health checks
+RUN apk --no-cache add ca-certificates curl
 
 WORKDIR /root/
 

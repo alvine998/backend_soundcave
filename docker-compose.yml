@@ -15,6 +15,13 @@ services:
     # Opsi 1: Menggunakan host network untuk akses MySQL di server Linux
     # Dengan host network, container bisa akses MySQL di localhost server
     network_mode: "host"
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6002/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     
     # Opsi 2: Jika MySQL di server dengan IP tertentu, gunakan bridge network
     # Uncomment bagian ini dan comment network_mode di atas

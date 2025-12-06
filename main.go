@@ -20,17 +20,43 @@ func main() {
 		log.Println("File .env tidak ditemukan, menggunakan environment variables dari sistem")
 	}
 
-	// Initialize database
-	db, err := database.Connect()
-	if err != nil {
-		log.Fatal("Gagal koneksi ke database:", err)
+	// Log environment check (tanpa expose sensitive data)
+	log.Println("Checking environment variables...")
+	requiredEnvVars := []string{"DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"}
+	for _, envVar := range requiredEnvVars {
+		if os.Getenv(envVar) == "" {
+			log.Printf("WARNING: %s tidak di-set", envVar)
+		} else {
+			log.Printf("✓ %s di-set", envVar)
+		}
 	}
 
+	// Check Firebase service account file
+	firebasePath := os.Getenv("FIREBASE_SERVICE_ACCOUNT_PATH")
+	if firebasePath == "" {
+		firebasePath = "/root/firebase-service-account.json"
+	}
+	if _, err := os.Stat(firebasePath); os.IsNotExist(err) {
+		log.Printf("WARNING: Firebase service account file tidak ditemukan di %s", firebasePath)
+	} else {
+		log.Printf("✓ Firebase service account file ditemukan di %s", firebasePath)
+	}
+
+	// Initialize database
+	log.Println("Mencoba koneksi ke database...")
+	db, err := database.Connect()
+	if err != nil {
+		log.Fatalf("Gagal koneksi ke database: %v", err)
+	}
+	log.Println("✓ Koneksi database berhasil")
+
 	// Initialize Firebase
+	log.Println("Mencoba inisialisasi Firebase...")
 	firebaseApp, err := config.InitFirebase()
 	if err != nil {
-		log.Fatal("Gagal inisialisasi Firebase:", err)
+		log.Fatalf("Gagal inisialisasi Firebase: %v", err)
 	}
+	log.Println("✓ Firebase berhasil diinisialisasi")
 
 	// Initialize Fiber app
 	app := fiber.New(fiber.Config{
@@ -69,6 +95,6 @@ func main() {
 
 	log.Printf("Server berjalan di %s:%s", host, port)
 	if err := app.Listen(host + ":" + port); err != nil {
-		log.Fatal("Gagal menjalankan server:", err)
+		log.Fatalf("Gagal menjalankan server: %v", err)
 	}
 }
