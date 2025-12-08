@@ -271,6 +271,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 
 	// Podcast CRUD routes
 	podcasts := api.Group("/podcasts")
+	podcasts.Post("/upload", func(c *fiber.Ctx) error {
+		return handlers.UploadPodcastVideoHandler(c, db)
+	})
 	podcasts.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreatePodcastHandler(c, db)
 	})

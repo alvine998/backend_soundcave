@@ -18,7 +18,7 @@ type CreatePodcastRequest struct {
 	Description   string  `json:"description" validate:"required"`
 	EpisodeNumber *int    `json:"episode_number"`
 	Season        *int    `json:"season"`
-	AudioURL      string  `json:"audio_url" validate:"required"`
+	VideoURL      string  `json:"video_url" validate:"required"`
 	Thumbnail     *string `json:"thumbnail"`
 }
 
@@ -32,7 +32,7 @@ type UpdatePodcastRequest struct {
 	Description   *string `json:"description"`
 	EpisodeNumber *int    `json:"episode_number"`
 	Season        *int    `json:"season"`
-	AudioURL      *string `json:"audio_url"`
+	VideoURL      *string `json:"video_url"`
 	Thumbnail     *string `json:"thumbnail"`
 }
 
@@ -68,7 +68,7 @@ func CreatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Description:   req.Description,
 		EpisodeNumber: req.EpisodeNumber,
 		Season:        req.Season,
-		AudioURL:      req.AudioURL,
+		VideoURL:      req.VideoURL,
 		Thumbnail:     req.Thumbnail,
 	}
 
@@ -246,8 +246,8 @@ func UpdatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 		podcast.Season = req.Season
 	}
 
-	if req.AudioURL != nil {
-		podcast.AudioURL = *req.AudioURL
+	if req.VideoURL != nil {
+		podcast.VideoURL = *req.VideoURL
 	}
 
 	if req.Thumbnail != nil {

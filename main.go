@@ -60,11 +60,30 @@ func main() {
 
 	// Initialize Fiber app
 	app := fiber.New(fiber.Config{
-		AppName: "SoundCave Backend",
+		AppName:   "SoundCave Backend",
+		BodyLimit: 200 * 1024 * 1024, // 200MB untuk support upload podcast video
 	})
 
 	// Middleware
 	app.Use(logger.New())
+
+	// Rate limiting: 30 requests per minute (DISABLED)
+	// app.Use(limiter.New(limiter.Config{
+	// 	Max:        30,
+	// 	Expiration: 1 * time.Minute,
+	// 	KeyGenerator: func(c *fiber.Ctx) string {
+	// 		// Use IP address as key for rate limiting
+	// 		return c.IP()
+	// 	},
+	// 	LimitReached: func(c *fiber.Ctx) error {
+	// 		return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+	// 			"success": false,
+	// 			"message": "Terlalu banyak request. Maksimal 30 requests per menit.",
+	// 		})
+	// 	},
+	// 	SkipFailedRequests:     false,
+	// 	SkipSuccessfulRequests: false,
+	// }))
 
 	// CORS configuration
 	corsOrigins := os.Getenv("CORS_ORIGINS")

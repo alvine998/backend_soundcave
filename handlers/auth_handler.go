@@ -74,7 +74,7 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Email:    req.Email,
 		Password: &hashedPasswordStr,
 		Phone:    phone,
-		Role:     models.RoleUser,
+		Role:     models.RoleUser, // Default role adalah "user"
 	}
 
 	if err := db.Create(&user).Error; err != nil {
@@ -85,23 +85,11 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Generate JWT token
-	token, err := utils.GenerateToken(user.ID, user.Email, string(user.Role))
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"success": false,
-			"message": "Gagal generate token",
-			"error":   err.Error(),
-		})
-	}
-
+	// Return user data tanpa token (user perlu login terpisah untuk mendapatkan token)
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": true,
-		"message": "Registrasi berhasil",
-		"data": fiber.Map{
-			"user":  user,
-			"token": token,
-		},
+		"message": "Registrasi berhasil. Silakan login untuk mendapatkan token.",
+		"data":    user,
 	})
 }
 
