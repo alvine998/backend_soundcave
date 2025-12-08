@@ -87,17 +87,14 @@ func main() {
 	// 	SkipSuccessfulRequests: false,
 	// }))
 
-	// CORS configuration
-	corsOrigins := os.Getenv("CORS_ORIGINS")
-	if corsOrigins == "" {
-		corsOrigins = "*"
-	}
-
+	// CORS configuration - Allow all origins
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     corsOrigins,
-		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
-		AllowHeaders:     "Origin,Content-Type,Accept,Authorization",
-		AllowCredentials: corsOrigins != "*", // Hanya true jika origin bukan wildcard
+		AllowOrigins:     "*",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,X-Requested-With",
+		AllowCredentials: false, // Must be false when AllowOrigins is "*"
+		ExposeHeaders:    "Content-Length",
+		MaxAge:           86400, // 24 hours
 	}))
 
 	// Routes
