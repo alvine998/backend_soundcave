@@ -18,7 +18,7 @@ const (
 // User model sesuai struktur tabel
 type User struct {
 	ID           uint           `json:"id" gorm:"primaryKey;autoIncrement"`
-	FullName     string         `json:"full_name" gorm:"size:255;not null"`
+	FullName     string         `json:"full_name" gorm:"column:full_name;size:255;not null"`
 	Email        string         `json:"email" gorm:"column:email;size:255;not null;uniqueIndex"`
 	Password     *string        `json:"-" gorm:"size:255"` // Hidden dari JSON response, nullable untuk Google Auth
 	Phone        *string        `json:"phone" gorm:"size:20"`
