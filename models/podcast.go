@@ -17,7 +17,7 @@ type Podcast struct {
 	Description   string         `json:"description" gorm:"type:text;not null"`
 	EpisodeNumber *int           `json:"episode_number"`
 	Season        *int           `json:"season"`
-	VideoURL      string         `json:"video_url" gorm:"size:500;not null"`
+	VideoURL      string         `json:"video_url" gorm:"column:video_url;size:500;not null"`
 	Thumbnail     *string        `json:"thumbnail" gorm:"size:255"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`

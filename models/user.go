@@ -19,7 +19,7 @@ const (
 type User struct {
 	ID           uint           `json:"id" gorm:"primaryKey;autoIncrement"`
 	FullName     string         `json:"full_name" gorm:"size:255;not null"`
-	Email        string         `json:"email" gorm:"size:255;not null;uniqueIndex"`
+	Email        string         `json:"email" gorm:"column:email;size:255;not null;uniqueIndex"`
 	Password     *string        `json:"-" gorm:"size:255"` // Hidden dari JSON response, nullable untuk Google Auth
 	Phone        *string        `json:"phone" gorm:"size:20"`
 	Location     *string        `json:"location" gorm:"size:255"`

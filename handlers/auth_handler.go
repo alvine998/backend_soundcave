@@ -43,6 +43,35 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	// Validasi field required
+	if req.FullName == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Field full_name wajib diisi",
+		})
+	}
+
+	if req.Email == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Field email wajib diisi",
+		})
+	}
+
+	if req.Password == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Field password wajib diisi",
+		})
+	}
+
+	if len(req.Password) < 6 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Password minimal 6 karakter",
+		})
+	}
+
 	// Validasi email sudah ada
 	var existingUser models.User
 	if err := db.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
@@ -78,6 +107,7 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	if err := db.Create(&user).Error; err != nil {
+		// Log error untuk debugging
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
 			"message": "Gagal membuat user",
