@@ -40,6 +40,12 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	protected.Get("/profile", func(c *fiber.Ctx) error {
 		return handlers.GetProfileHandler(c, db)
 	})
+	protected.Get("/dashboard/stats", func(c *fiber.Ctx) error {
+		return handlers.GetDashboardStatsHandler(c, db)
+	})
+	protected.Get("/dashboard/customer-report", func(c *fiber.Ctx) error {
+		return handlers.GetCustomerReportHandler(c, db)
+	})
 
 	// Image upload routes
 	images := api.Group("/images")
@@ -151,6 +157,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 
 	// Music CRUD routes
 	musics := api.Group("/musics")
+	musics.Post("/upload", func(c *fiber.Ctx) error {
+		return handlers.UploadMusicHandler(c, db)
+	})
 	musics.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateMusicHandler(c, db)
 	})
@@ -175,6 +184,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 
 	// Music Video CRUD routes
 	musicVideos := api.Group("/music-videos")
+	musicVideos.Post("/upload", func(c *fiber.Ctx) error {
+		return handlers.UploadMusicVideoHandler(c, db)
+	})
 	musicVideos.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateMusicVideoHandler(c, db)
 	})
@@ -236,6 +248,27 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeletePlaylistHandler(c, db)
 	})
 
+	// Playlist Songs CRUD routes
+	playlistSongs := api.Group("/playlist-songs")
+	playlistSongs.Post("/", func(c *fiber.Ctx) error {
+		return handlers.CreatePlaylistSongHandler(c, db)
+	})
+	playlistSongs.Get("/playlist/:playlist_id", func(c *fiber.Ctx) error {
+		return handlers.GetPlaylistSongsHandler(c, db)
+	})
+	playlistSongs.Get("/:id", func(c *fiber.Ctx) error {
+		return handlers.GetPlaylistSongHandler(c, db)
+	})
+	playlistSongs.Put("/:id", func(c *fiber.Ctx) error {
+		return handlers.UpdatePlaylistSongHandler(c, db)
+	})
+	playlistSongs.Delete("/:id", func(c *fiber.Ctx) error {
+		return handlers.DeletePlaylistSongHandler(c, db)
+	})
+	playlistSongs.Delete("/playlist/:playlist_id/music/:music_id", func(c *fiber.Ctx) error {
+		return handlers.DeletePlaylistSongByMusicHandler(c, db)
+	})
+
 	// Podcast CRUD routes
 	podcasts := api.Group("/podcasts")
 	podcasts.Post("/", func(c *fiber.Ctx) error {
@@ -271,5 +304,22 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	subscriptionPlans.Delete("/:id", func(c *fiber.Ctx) error {
 		return handlers.DeleteSubscriptionPlanHandler(c, db)
 	})
-}
 
+	// News CRUD routes
+	news := api.Group("/news")
+	news.Post("/", func(c *fiber.Ctx) error {
+		return handlers.CreateNewsHandler(c, db)
+	})
+	news.Get("/", func(c *fiber.Ctx) error {
+		return handlers.GetNewsHandler(c, db)
+	})
+	news.Get("/:id", func(c *fiber.Ctx) error {
+		return handlers.GetNewsByIDHandler(c, db)
+	})
+	news.Put("/:id", func(c *fiber.Ctx) error {
+		return handlers.UpdateNewsHandler(c, db)
+	})
+	news.Delete("/:id", func(c *fiber.Ctx) error {
+		return handlers.DeleteNewsHandler(c, db)
+	})
+}

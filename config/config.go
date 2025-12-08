@@ -2,11 +2,12 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"os"
 
+	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	firebaseStorage "firebase.google.com/go/v4/storage"
-	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 )
 
@@ -42,9 +43,13 @@ func InitFirebase() (*firebase.App, error) {
 
 // GetStorageBucket mengembalikan storage bucket
 func GetStorageBucket() (*storage.BucketHandle, error) {
+	if StorageClient == nil {
+		return nil, fmt.Errorf("Firebase Storage client belum diinisialisasi")
+	}
+
 	bucketName := os.Getenv("FIREBASE_STORAGE_BUCKET")
 	if bucketName == "" {
-		return nil, nil
+		return nil, fmt.Errorf("FIREBASE_STORAGE_BUCKET environment variable tidak di-set")
 	}
 
 	bucket, err := StorageClient.Bucket(bucketName)
@@ -54,4 +59,3 @@ func GetStorageBucket() (*storage.BucketHandle, error) {
 
 	return bucket, nil
 }
-

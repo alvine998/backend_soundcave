@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"backend_soundcave/config"
@@ -18,13 +20,19 @@ import (
 // UploadImageHandler menangani upload gambar ke Firebase Storage
 func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
-	file, err := c.FormFile("image")
+	file, err := c.FormFile("file")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "File gambar tidak ditemukan",
 			"error":   err.Error(),
 		})
+	}
+
+	// Get folder dari form-data, default ke "images" jika tidak ada
+	folder := c.FormValue("folder")
+	if folder == "" {
+		folder = "images"
 	}
 
 	// Validasi file size (max 10MB)
@@ -66,7 +74,7 @@ func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Generate unique filename
 	ext := filepath.Ext(file.Filename)
 	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-	bucketPath := fmt.Sprintf("images/%s", filename)
+	bucketPath := fmt.Sprintf("%s/%s", folder, filename)
 
 	// Upload ke Firebase Storage
 	ctx := context.Background()
@@ -76,6 +84,13 @@ func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 			"success": false,
 			"message": "Gagal mengakses Firebase Storage",
 			"error":   err.Error(),
+		})
+	}
+
+	if bucket == nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Firebase Storage bucket tidak tersedia",
 		})
 	}
 
@@ -127,11 +142,20 @@ func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 		}
 		bucketName = attrs.Bucket
 	}
-	
-	// Generate public URL
-	fileURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media", 
-		bucketName, 
-		fmt.Sprintf("images%%2F%s", filename))
+
+	// Generate public URL (encode folder path)
+	// Firebase Storage requires path segments to be URL encoded, with / as %2F
+	pathSegments := strings.Split(folder, "/")
+	encodedSegments := make([]string, len(pathSegments))
+	for i, segment := range pathSegments {
+		encodedSegments[i] = url.PathEscape(segment)
+	}
+	encodedFolder := strings.Join(encodedSegments, "%2F")
+	encodedFilename := url.PathEscape(filename)
+	encodedPath := fmt.Sprintf("%s%%2F%s", encodedFolder, encodedFilename)
+	fileURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+		bucketName,
+		encodedPath)
 
 	// Simpan informasi ke database
 	image := models.Image{
@@ -168,12 +192,18 @@ func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	files := form.File["images"]
+	files := form.File["file"]
 	if len(files) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Tidak ada file yang diupload",
 		})
+	}
+
+	// Get folder dari form-data, default ke "images" jika tidak ada
+	folder := c.FormValue("folder")
+	if folder == "" {
+		folder = "images"
 	}
 
 	var uploadedImages []models.Image
@@ -186,6 +216,13 @@ func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 			"success": false,
 			"message": "Gagal mengakses Firebase Storage",
 			"error":   err.Error(),
+		})
+	}
+
+	if bucket == nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Firebase Storage bucket tidak tersedia",
 		})
 	}
 
@@ -223,7 +260,7 @@ func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 		// Generate filename
 		ext := filepath.Ext(file.Filename)
 		filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-		bucketPath := fmt.Sprintf("images/%s", filename)
+		bucketPath := fmt.Sprintf("%s/%s", folder, filename)
 
 		// Upload ke Firebase
 		obj := bucket.Object(bucketPath)
@@ -261,10 +298,19 @@ func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 			bucketName = attrs.Bucket
 		}
 
-		// Generate public URL
+		// Generate public URL (encode folder path)
+		// Firebase Storage requires path segments to be URL encoded, with / as %2F
+		pathSegments := strings.Split(folder, "/")
+		encodedSegments := make([]string, len(pathSegments))
+		for i, segment := range pathSegments {
+			encodedSegments[i] = url.PathEscape(segment)
+		}
+		encodedFolder := strings.Join(encodedSegments, "%2F")
+		encodedFilename := url.PathEscape(filename)
+		encodedPath := fmt.Sprintf("%s%%2F%s", encodedFolder, encodedFilename)
 		fileURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
 			bucketName,
-			fmt.Sprintf("images%%2F%s", filename))
+			encodedPath)
 
 		// Simpan ke database
 		image := models.Image{
@@ -352,3 +398,318 @@ func DeleteImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
+// UploadMusicHandler menangani upload file music ke Firebase Storage
+func UploadMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
+	// Parse multipart form
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "File music tidak ditemukan",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get folder dari form-data, default ke "musics" jika tidak ada
+	folder := c.FormValue("folder")
+	if folder == "" {
+		folder = "musics"
+	}
+
+	// Validasi file size (max 5MB)
+	maxSize := int64(5 * 1024 * 1024) // 5MB
+	if file.Size > maxSize {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Ukuran file terlalu besar. Maksimal 5MB",
+		})
+	}
+
+	// Validasi file type
+	allowedTypes := map[string]bool{
+		"audio/mpeg":   true, // MP3
+		"audio/mp3":    true,
+		"audio/wav":    true,
+		"audio/wave":   true,
+		"audio/x-wav":  true,
+		"audio/ogg":    true,
+		"audio/vorbis": true,
+		"audio/mp4":    true,
+		"audio/m4a":    true,
+		"audio/aac":    true,
+		"audio/flac":   true,
+		"audio/x-flac": true,
+	}
+
+	contentType := file.Header.Get("Content-Type")
+	if !allowedTypes[contentType] {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Tipe file tidak diizinkan. Hanya file audio (MP3, WAV, OGG, M4A, AAC, FLAC)",
+		})
+	}
+
+	// Buka file
+	src, err := file.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal membuka file",
+			"error":   err.Error(),
+		})
+	}
+	defer src.Close()
+
+	// Generate unique filename
+	ext := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+	bucketPath := fmt.Sprintf("%s/%s", folder, filename)
+
+	// Upload ke Firebase Storage
+	ctx := context.Background()
+	bucket, err := config.GetStorageBucket()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengakses Firebase Storage",
+			"error":   err.Error(),
+		})
+	}
+
+	if bucket == nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Firebase Storage bucket tidak tersedia",
+		})
+	}
+
+	// Buat object writer
+	obj := bucket.Object(bucketPath)
+	writer := obj.NewWriter(ctx)
+	writer.ContentType = contentType
+	writer.CacheControl = "public, max-age=31536000"
+
+	// Copy file ke Firebase Storage
+	if _, err := io.Copy(writer, src); err != nil {
+		writer.Close()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal upload file ke Firebase Storage",
+			"error":   err.Error(),
+		})
+	}
+
+	// Close writer
+	if err := writer.Close(); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menutup writer",
+			"error":   err.Error(),
+		})
+	}
+
+	// Set public access
+	if err := obj.ACL().Set(ctx, "allUsers", "READER"); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal set public access",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get public URL
+	bucketName := os.Getenv("FIREBASE_STORAGE_BUCKET")
+	if bucketName == "" {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "Gagal mendapatkan URL file",
+				"error":   err.Error(),
+			})
+		}
+		bucketName = attrs.Bucket
+	}
+
+	// Generate public URL (encode folder path)
+	pathSegments := strings.Split(folder, "/")
+	encodedSegments := make([]string, len(pathSegments))
+	for i, segment := range pathSegments {
+		encodedSegments[i] = url.PathEscape(segment)
+	}
+	encodedFolder := strings.Join(encodedSegments, "%2F")
+	encodedFilename := url.PathEscape(filename)
+	encodedPath := fmt.Sprintf("%s%%2F%s", encodedFolder, encodedFilename)
+	fileURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+		bucketName,
+		encodedPath)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "File music berhasil diupload",
+		"data": fiber.Map{
+			"file_name":    file.Filename,
+			"file_url":     fileURL,
+			"file_size":    file.Size,
+			"content_type": contentType,
+			"bucket_path":  bucketPath,
+		},
+	})
+}
+
+// UploadMusicVideoHandler menangani upload file music video ke Firebase Storage
+func UploadMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
+	// Parse multipart form
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "File music video tidak ditemukan",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get folder dari form-data, default ke "music-videos" jika tidak ada
+	folder := c.FormValue("folder")
+	if folder == "" {
+		folder = "music-videos"
+	}
+
+	// Validasi file size (max 150MB)
+	maxSize := int64(150 * 1024 * 1024) // 150MB
+	if file.Size > maxSize {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Ukuran file terlalu besar. Maksimal 150MB",
+		})
+	}
+
+	// Validasi file type untuk video
+	allowedTypes := map[string]bool{
+		"video/mp4":        true, // MP4
+		"video/x-m4v":      true, // M4V
+		"video/quicktime":  true, // MOV
+		"video/x-msvideo":  true, // AVI
+		"video/x-ms-wmv":   true, // WMV
+		"video/webm":       true, // WebM
+		"video/ogg":        true, // OGG
+		"video/x-matroska": true, // MKV
+		"video/3gpp":       true, // 3GP
+		"video/3gpp2":      true, // 3G2
+	}
+
+	contentType := file.Header.Get("Content-Type")
+	if !allowedTypes[contentType] {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Tipe file tidak diizinkan. Hanya file video (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)",
+		})
+	}
+
+	// Buka file
+	src, err := file.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal membuka file",
+			"error":   err.Error(),
+		})
+	}
+	defer src.Close()
+
+	// Generate unique filename
+	ext := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+	bucketPath := fmt.Sprintf("%s/%s", folder, filename)
+
+	// Upload ke Firebase Storage
+	ctx := context.Background()
+	bucket, err := config.GetStorageBucket()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengakses Firebase Storage",
+			"error":   err.Error(),
+		})
+	}
+
+	if bucket == nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Firebase Storage bucket tidak tersedia",
+		})
+	}
+
+	// Buat object writer
+	obj := bucket.Object(bucketPath)
+	writer := obj.NewWriter(ctx)
+	writer.ContentType = contentType
+	writer.CacheControl = "public, max-age=31536000"
+
+	// Copy file ke Firebase Storage
+	if _, err := io.Copy(writer, src); err != nil {
+		writer.Close()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal upload file ke Firebase Storage",
+			"error":   err.Error(),
+		})
+	}
+
+	// Close writer
+	if err := writer.Close(); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menutup writer",
+			"error":   err.Error(),
+		})
+	}
+
+	// Set public access
+	if err := obj.ACL().Set(ctx, "allUsers", "READER"); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal set public access",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get public URL
+	bucketName := os.Getenv("FIREBASE_STORAGE_BUCKET")
+	if bucketName == "" {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "Gagal mendapatkan URL file",
+				"error":   err.Error(),
+			})
+		}
+		bucketName = attrs.Bucket
+	}
+
+	// Generate public URL (encode folder path)
+	pathSegments := strings.Split(folder, "/")
+	encodedSegments := make([]string, len(pathSegments))
+	for i, segment := range pathSegments {
+		encodedSegments[i] = url.PathEscape(segment)
+	}
+	encodedFolder := strings.Join(encodedSegments, "%2F")
+	encodedFilename := url.PathEscape(filename)
+	encodedPath := fmt.Sprintf("%s%%2F%s", encodedFolder, encodedFilename)
+	fileURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+		bucketName,
+		encodedPath)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "File music video berhasil diupload",
+		"data": fiber.Map{
+			"file_name":    file.Filename,
+			"file_url":     fileURL,
+			"file_size":    file.Size,
+			"content_type": contentType,
+			"bucket_path":  bucketPath,
+		},
+	})
+}

@@ -98,14 +98,14 @@ func GetGenresHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	// Search by name
 	if search := c.Query("search"); search != "" {
-		query = query.Where("name LIKE ? OR description LIKE ?", "%"+search+"%", "%"+search+"%")
+		query = query.Where("name LIKE ?", "%"+search+"%")
 	}
 
 	// Sort by name atau created_at
-	sortBy := c.Query("sort_by", "name")
-	order := c.Query("order", "asc")
+	sortBy := c.Query("sort_by", "created_at")
+	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
-		order = "asc"
+		order = "desc"
 	}
 	query = query.Order(sortBy + " " + order)
 
@@ -262,4 +262,3 @@ func DeleteGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Genre berhasil dihapus",
 	})
 }
-

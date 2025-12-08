@@ -220,11 +220,11 @@ func GoogleAuthHandler(c *fiber.Ctx, db *gorm.DB) error {
 			profileImage = &picture
 		}
 		user = models.User{
-			FullName:    name,
-			Email:       email,
-			Password:    nil, // Tidak ada password untuk Google Auth
+			FullName:     name,
+			Email:        email,
+			Password:     nil, // Tidak ada password untuk Google Auth
 			ProfileImage: profileImage,
-			Role:        models.RoleUser,
+			Role:         models.RoleUser,
 		}
 
 		if err := db.Create(&user).Error; err != nil {
@@ -282,7 +282,7 @@ func GetProfileHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	var user models.User
-	if err := db.First(&user, userID).Error; err != nil {
+	if err := db.Select("*").First(&user, userID).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"success": false,
@@ -301,4 +301,3 @@ func GetProfileHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"data":    user,
 	})
 }
-

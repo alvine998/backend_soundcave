@@ -14,7 +14,7 @@ type CreateMusicVideoRequest struct {
 	ArtistID    int     `json:"artist_id" validate:"required"`
 	Artist      string  `json:"artist" validate:"required"`
 	ReleaseDate string  `json:"release_date" validate:"required"` // Format: "2006-01-02"
-	Duration    string  `json:"duration" validate:"required"`         // Format: MM:SS atau HH:MM:SS
+	Duration    string  `json:"duration" validate:"required"`     // Format: MM:SS atau HH:MM:SS
 	Genre       string  `json:"genre" validate:"required"`
 	Description *string `json:"description"`
 	VideoURL    string  `json:"video_url" validate:"required"`
@@ -27,7 +27,7 @@ type UpdateMusicVideoRequest struct {
 	ArtistID    *int    `json:"artist_id"`
 	Artist      *string `json:"artist"`
 	ReleaseDate *string `json:"release_date"` // Format: "2006-01-02"
-	Duration    *string `json:"duration"`       // Format: MM:SS atau HH:MM:SS
+	Duration    *string `json:"duration"`     // Format: MM:SS atau HH:MM:SS
 	Genre       *string `json:"genre"`
 	Description *string `json:"description"`
 	VideoURL    *string `json:"video_url"`
@@ -111,8 +111,8 @@ func GetMusicVideosHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("title LIKE ? OR artist LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Sort by release_date atau created_at
-	sortBy := c.Query("sort_by", "release_date")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
 	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
 		order = "desc"
@@ -289,4 +289,3 @@ func DeleteMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Music video berhasil dihapus",
 	})
 }
-

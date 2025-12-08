@@ -10,26 +10,26 @@ import (
 
 // CreateAlbumRequest struct untuk request create album
 type CreateAlbumRequest struct {
-	Title       string     `json:"title" validate:"required"`
-	ArtistID    int        `json:"artist_id" validate:"required"`
-	Artist      string     `json:"artist" validate:"required"`
-	ReleaseDate string     `json:"release_date" validate:"required"` // Format: "2006-01-02"
-	AlbumType   string     `json:"album_type" validate:"required,oneof=single EP album compilation"`
-	Genre       string     `json:"genre"`
-	TotalTracks int        `json:"total_tracks" validate:"min=0"`
-	RecordLabel *string    `json:"record_label"`
+	Title       string  `json:"title" validate:"required"`
+	ArtistID    int     `json:"artist_id" validate:"required"`
+	Artist      string  `json:"artist" validate:"required"`
+	ReleaseDate string  `json:"release_date" validate:"required"` // Format: "2006-01-02"
+	AlbumType   string  `json:"album_type" validate:"required,oneof=single EP album compilation"`
+	Genre       string  `json:"genre"`
+	TotalTracks int     `json:"total_tracks" validate:"min=0"`
+	RecordLabel *string `json:"record_label"`
 }
 
 // UpdateAlbumRequest struct untuk request update album
 type UpdateAlbumRequest struct {
-	Title       *string    `json:"title"`
-	ArtistID    *int       `json:"artist_id"`
-	Artist      *string    `json:"artist"`
-	ReleaseDate *string    `json:"release_date"` // Format: "2006-01-02"
-	AlbumType   *string    `json:"album_type" validate:"omitempty,oneof=single EP album compilation"`
-	Genre       *string    `json:"genre"`
-	TotalTracks *int       `json:"total_tracks" validate:"omitempty,min=0"`
-	RecordLabel *string    `json:"record_label"`
+	Title       *string `json:"title"`
+	ArtistID    *int    `json:"artist_id"`
+	Artist      *string `json:"artist"`
+	ReleaseDate *string `json:"release_date"` // Format: "2006-01-02"
+	AlbumType   *string `json:"album_type" validate:"omitempty,oneof=single EP album compilation"`
+	Genre       *string `json:"genre"`
+	TotalTracks *int    `json:"total_tracks" validate:"omitempty,min=0"`
+	RecordLabel *string `json:"record_label"`
 }
 
 // CreateAlbumHandler membuat album baru
@@ -131,8 +131,8 @@ func GetAlbumsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("title LIKE ? OR artist LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Sort by release date
-	sortBy := c.Query("sort_by", "release_date")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
 	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
 		order = "desc"
@@ -319,4 +319,3 @@ func DeleteAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Album berhasil dihapus",
 	})
 }
-

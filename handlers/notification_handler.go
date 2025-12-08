@@ -11,12 +11,12 @@ import (
 
 // CreateNotificationRequest struct untuk request create notification
 type CreateNotificationRequest struct {
-	UserID  int     `json:"user_id" validate:"required"`
-	Title   string  `json:"title" validate:"required"`
-	Message string  `json:"message" validate:"required"`
-	Date    string  `json:"date" validate:"required"` // Format: "2006-01-02"
-	IsRead  *bool   `json:"is_read"`
-	Type    string  `json:"type" validate:"omitempty,oneof=info success warning error"`
+	UserID  int    `json:"user_id" validate:"required"`
+	Title   string `json:"title" validate:"required"`
+	Message string `json:"message" validate:"required"`
+	Date    string `json:"date" validate:"required"` // Format: "2006-01-02"
+	IsRead  *bool  `json:"is_read"`
+	Type    string `json:"type" validate:"omitempty,oneof=info success warning error"`
 }
 
 // UpdateNotificationRequest struct untuk request update notification
@@ -137,8 +137,8 @@ func GetNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("title LIKE ? OR message LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Sort by date atau created_at
-	sortBy := c.Query("sort_by", "date")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
 	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
 		order = "desc"
@@ -222,8 +222,8 @@ func GetUserNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("type = ?", notificationType)
 	}
 
-	// Sort by date atau created_at
-	sortBy := c.Query("sort_by", "date")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
 	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
 		order = "desc"
@@ -437,4 +437,3 @@ func DeleteNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Notification berhasil dihapus",
 	})
 }
-

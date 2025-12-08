@@ -13,7 +13,7 @@ type CreatePodcastRequest struct {
 	Title         string  `json:"title" validate:"required"`
 	Host          string  `json:"host" validate:"required"`
 	ReleaseDate   string  `json:"release_date" validate:"required"` // Format: "2006-01-02"
-	Duration      string  `json:"duration" validate:"required"`       // Format: MM:SS atau HH:MM:SS
+	Duration      string  `json:"duration" validate:"required"`     // Format: MM:SS atau HH:MM:SS
 	Category      string  `json:"category" validate:"required"`
 	Description   string  `json:"description" validate:"required"`
 	EpisodeNumber *int    `json:"episode_number"`
@@ -27,7 +27,7 @@ type UpdatePodcastRequest struct {
 	Title         *string `json:"title"`
 	Host          *string `json:"host"`
 	ReleaseDate   *string `json:"release_date"` // Format: "2006-01-02"
-	Duration      *string `json:"duration"`       // Format: MM:SS atau HH:MM:SS
+	Duration      *string `json:"duration"`     // Format: MM:SS atau HH:MM:SS
 	Category      *string `json:"category"`
 	Description   *string `json:"description"`
 	EpisodeNumber *int    `json:"episode_number"`
@@ -119,8 +119,8 @@ func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("title LIKE ? OR host LIKE ? OR description LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Sort by release_date atau created_at
-	sortBy := c.Query("sort_by", "release_date")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
 	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
 		order = "desc"
@@ -301,4 +301,3 @@ func DeletePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Podcast berhasil dihapus",
 	})
 }
-

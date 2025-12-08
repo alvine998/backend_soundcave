@@ -18,7 +18,7 @@ type Artist struct {
 	Email        string         `json:"email" gorm:"size:255;not null"`
 	Phone        *string        `json:"phone" gorm:"size:20"`
 	SocialMedia  JSONB          `json:"social_media" gorm:"type:json"`
-	ProfileImage *string        `json:"profile_image" gorm:"size:255"`
+	ProfileImage *string        `json:"profile_image" gorm:"column:profile_image;size:255"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	DeletedAt    gorm.DeletedAt `json:"deleted_at" gorm:"index"`
@@ -28,4 +28,3 @@ type Artist struct {
 func (Artist) TableName() string {
 	return "artists"
 }
-

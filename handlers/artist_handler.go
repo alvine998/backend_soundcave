@@ -123,11 +123,11 @@ func GetArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("name LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Sort by name atau created_at
-	sortBy := c.Query("sort_by", "name")
-	order := c.Query("order", "asc")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
+	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
-		order = "asc"
+		order = "desc"
 	}
 	query = query.Order(sortBy + " " + order)
 
@@ -305,4 +305,3 @@ func DeleteArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Artist berhasil dihapus",
 	})
 }
-

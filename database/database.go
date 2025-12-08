@@ -66,8 +66,10 @@ func Connect() (*gorm.DB, error) {
 		&models.MusicVideo{},
 		&models.Notification{},
 		&models.Playlist{},
+		&models.PlaylistSong{},
 		&models.Podcast{},
 		&models.SubscriptionPlan{},
+		&models.News{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("gagal migrate database: %w", err)
@@ -76,4 +78,3 @@ func Connect() (*gorm.DB, error) {
 	DB = db
 	return db, nil
 }
-

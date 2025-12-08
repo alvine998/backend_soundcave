@@ -18,7 +18,7 @@ type CreateMusicRequest struct {
 	AlbumID       *int    `json:"album_id"`
 	Genre         string  `json:"genre" validate:"required"`
 	ReleaseDate   string  `json:"release_date" validate:"required"` // Format: "2006-01-02"
-	Duration      string  `json:"duration" validate:"required"`       // Format: MM:SS atau HH:MM:SS
+	Duration      string  `json:"duration" validate:"required"`     // Format: MM:SS atau HH:MM:SS
 	Language      string  `json:"language" validate:"required"`
 	Explicit      *bool   `json:"explicit"`
 	Lyrics        *string `json:"lyrics"`
@@ -169,8 +169,8 @@ func GetMusicsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		query = query.Where("title LIKE ? OR artist LIKE ? OR album LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Sort by release_date, play_count, atau like_count
-	sortBy := c.Query("sort_by", "release_date")
+	// Sort by created_at
+	sortBy := c.Query("sort_by", "created_at")
 	order := c.Query("order", "desc")
 	if order != "asc" && order != "desc" {
 		order = "desc"
@@ -463,4 +463,3 @@ func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"data":    music,
 	})
 }
-
