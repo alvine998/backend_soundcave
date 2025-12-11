@@ -2119,6 +2119,27 @@ paths:
       summary: Increment play count
       tags:
       - Musics
+  /musics/top-streamed:
+    get:
+      consumes:
+      - application/json
+      description: Get top 5 music tracks sorted by play count (most streamed)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get top 5 most streamed music
+      tags:
+      - Musics
   /musics/upload:
     post:
       consumes:

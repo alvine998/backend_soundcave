@@ -541,3 +541,33 @@ func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"data":    music,
 	})
 }
+
+// GetTop5MostStreamedHandler mendapatkan top 5 musik yang paling banyak di-stream
+// @Summary      Get top 5 most streamed music
+// @Description  Get top 5 music tracks sorted by play count (most streamed)
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /musics/top-streamed [get]
+func GetTop5MostStreamedHandler(c *fiber.Ctx, db *gorm.DB) error {
+	var musics []models.Music
+
+	// Query untuk mendapatkan top 5 berdasarkan play_count
+	// Menggunakan IFNULL untuk menangani NULL values (default ke 0 untuk MySQL/MariaDB)
+	if err := db.Order("IFNULL(play_count, 0) DESC").Limit(5).Find(&musics).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data top streamed music",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Top 5 most streamed music berhasil diambil",
+		"data":    musics,
+		"count":   len(musics),
+	})
+}

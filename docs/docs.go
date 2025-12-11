@@ -1853,6 +1853,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/musics/top-streamed": {
+            "get": {
+                "description": "Get top 5 music tracks sorted by play count (most streamed)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Musics"
+                ],
+                "summary": "Get top 5 most streamed music",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/musics/upload": {
             "post": {
                 "description": "Upload a music file to Firebase Storage (max 5MB)",

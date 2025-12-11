@@ -167,6 +167,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	musics.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateMusicHandler(c, db)
 	})
+	musics.Get("/top-streamed", func(c *fiber.Ctx) error {
+		return handlers.GetTop5MostStreamedHandler(c, db)
+	})
 	musics.Get("/", func(c *fiber.Ctx) error {
 		return handlers.GetMusicsHandler(c, db)
 	})
