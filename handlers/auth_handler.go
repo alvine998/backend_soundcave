@@ -5,6 +5,7 @@ import (
 	"backend_soundcave/utils"
 	"context"
 	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -198,11 +199,36 @@ func LoginHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	// Pastikan full_name tidak kosong, jika kosong set default
+	if user.FullName == "" {
+		// Ambil nama dari email (bagian sebelum @) sebagai fallback
+		emailParts := strings.Split(user.Email, "@")
+		if len(emailParts) > 0 {
+			user.FullName = emailParts[0]
+		} else {
+			user.FullName = "User"
+		}
+	}
+
+	// Buat response user dengan data yang sudah di-ensure
+	userResponse := fiber.Map{
+		"id":            user.ID,
+		"full_name":     user.FullName,
+		"email":         user.Email,
+		"phone":         user.Phone,
+		"location":      user.Location,
+		"bio":           user.Bio,
+		"profile_image": user.ProfileImage, // Bisa null, itu normal
+		"role":          user.Role,
+		"created_at":    user.CreatedAt,
+		"updated_at":    user.UpdatedAt,
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "Login berhasil",
 		"data": fiber.Map{
-			"user":  user,
+			"user":  userResponse,
 			"token": token,
 		},
 	})
@@ -302,6 +328,17 @@ func GoogleAuthHandler(c *fiber.Ctx, db *gorm.DB) error {
 		}
 	}
 
+	// Pastikan full_name tidak kosong, jika kosong set default
+	if user.FullName == "" {
+		// Ambil nama dari email (bagian sebelum @) sebagai fallback
+		emailParts := strings.Split(user.Email, "@")
+		if len(emailParts) > 0 {
+			user.FullName = emailParts[0]
+		} else {
+			user.FullName = "User"
+		}
+	}
+
 	// Generate JWT token
 	token, err := utils.GenerateToken(user.ID, user.Email, string(user.Role))
 	if err != nil {
@@ -312,11 +349,25 @@ func GoogleAuthHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	// Buat response user dengan data yang sudah di-ensure
+	userResponse := fiber.Map{
+		"id":            user.ID,
+		"full_name":     user.FullName,
+		"email":         user.Email,
+		"phone":         user.Phone,
+		"location":      user.Location,
+		"bio":           user.Bio,
+		"profile_image": user.ProfileImage, // Bisa null, itu normal
+		"role":          user.Role,
+		"created_at":    user.CreatedAt,
+		"updated_at":    user.UpdatedAt,
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "Login Google berhasil",
 		"data": fiber.Map{
-			"user":  user,
+			"user":  userResponse,
 			"token": token,
 		},
 	})
@@ -358,8 +409,33 @@ func GetProfileHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	// Pastikan full_name tidak kosong, jika kosong set default
+	if user.FullName == "" {
+		// Ambil nama dari email (bagian sebelum @) sebagai fallback
+		emailParts := strings.Split(user.Email, "@")
+		if len(emailParts) > 0 {
+			user.FullName = emailParts[0]
+		} else {
+			user.FullName = "User"
+		}
+	}
+
+	// Buat response user dengan data yang sudah di-ensure
+	userResponse := fiber.Map{
+		"id":            user.ID,
+		"full_name":     user.FullName,
+		"email":         user.Email,
+		"phone":         user.Phone,
+		"location":      user.Location,
+		"bio":           user.Bio,
+		"profile_image": user.ProfileImage, // Bisa null, itu normal
+		"role":          user.Role,
+		"created_at":    user.CreatedAt,
+		"updated_at":    user.UpdatedAt,
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
-		"data":    user,
+		"data":    userResponse,
 	})
 }
