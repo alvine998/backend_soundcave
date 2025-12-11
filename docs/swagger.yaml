@@ -686,7 +686,7 @@ definitions:
       role:
         type: string
     type: object
-host: localhost:6002
+host: api.rezim.site
 info:
   contact:
     email: support@soundcave.com

@@ -5131,7 +5131,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:6002",
+	Host:             "api.rezim.site",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "SoundCave Backend API",
