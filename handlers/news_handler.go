@@ -36,6 +36,16 @@ type UpdateNewsRequest struct {
 }
 
 // CreateNewsHandler membuat news baru
+// @Summary      Create new news
+// @Description  Create a new news article
+// @Tags         News
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateNewsRequest  true  "News Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /news [post]
 func CreateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateNewsRequest
 
@@ -113,6 +123,22 @@ func CreateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetNewsHandler mendapatkan semua news dengan pagination
+// @Summary      Get all news
+// @Description  Get paginated list of news articles with filtering and search
+// @Tags         News
+// @Accept       json
+// @Produce      json
+// @Param        page         query     int     false  "Page number" default(1)
+// @Param        limit        query     int     false  "Items per page" default(10)
+// @Param        category     query     string  false  "Filter by category"
+// @Param        author       query     string  false  "Filter by author"
+// @Param        published    query     bool    false  "Filter by published status"
+// @Param        search       query     string  false  "Search by title or content"
+// @Param        sort_by      query     string  false  "Sort field" default(created_at)
+// @Param        order        query     string  false  "Sort order" default(desc)
+// @Success      200          {object}  map[string]interface{}
+// @Failure      500          {object}  map[string]interface{}
+// @Router       /news [get]
 func GetNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var news []models.News
 
@@ -215,6 +241,18 @@ func GetNewsByIDHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateNewsHandler mengupdate news
+// @Summary      Update news
+// @Description  Update news article information
+// @Tags         News
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int              true  "News ID"
+// @Param        request  body      UpdateNewsRequest  true  "Update News Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /news/{id} [put]
 func UpdateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -316,6 +354,16 @@ func UpdateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteNewsHandler menghapus news (soft delete)
+// @Summary      Delete news
+// @Description  Soft delete a news article by ID
+// @Tags         News
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "News ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /news/{id} [delete]
 func DeleteNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

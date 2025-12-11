@@ -33,6 +33,17 @@ type UpdateUserRequest struct {
 }
 
 // CreateUserHandler membuat user baru
+// @Summary      Create new user
+// @Description  Create a new user account (admin only)
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateUserRequest  true  "User Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      409      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /users [post]
 func CreateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateUserRequest
 
@@ -110,6 +121,18 @@ func CreateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetUsersHandler mendapatkan semua users dengan pagination
+// @Summary      Get all users
+// @Description  Get paginated list of users with filtering and search
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        page    query     int     false  "Page number" default(1)
+// @Param        limit   query     int     false  "Items per page" default(10)
+// @Param        role    query     string  false  "Filter by role"
+// @Param        search  query     string  false  "Search by name or email"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /users [get]
 func GetUsersHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var users []models.User
 
@@ -157,6 +180,16 @@ func GetUsersHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetUserHandler mendapatkan user by ID
+// @Summary      Get user by ID
+// @Description  Get user details by ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /users/{id} [get]
 func GetUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -182,6 +215,18 @@ func GetUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateUserHandler mengupdate user
+// @Summary      Update user
+// @Description  Update user information
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                true  "User ID"
+// @Param        request  body      UpdateUserRequest  true  "Update User Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /users/{id} [put]
 func UpdateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -287,6 +332,16 @@ func UpdateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteUserHandler menghapus user (soft delete)
+// @Summary      Delete user
+// @Description  Soft delete a user by ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /users/{id} [delete]
 func DeleteUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

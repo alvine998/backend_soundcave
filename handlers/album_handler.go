@@ -33,6 +33,16 @@ type UpdateAlbumRequest struct {
 }
 
 // CreateAlbumHandler membuat album baru
+// @Summary      Create new album
+// @Description  Create a new album
+// @Tags         Albums
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateAlbumRequest  true  "Album Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /albums [post]
 func CreateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateAlbumRequest
 
@@ -100,6 +110,20 @@ func CreateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetAlbumsHandler mendapatkan semua albums dengan pagination
+// @Summary      Get all albums
+// @Description  Get paginated list of albums with filtering and search
+// @Tags         Albums
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        artist   query     string  false  "Filter by artist"
+// @Param        search   query     string  false  "Search by title or artist"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /albums [get]
 func GetAlbumsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var albums []models.Album
 
@@ -165,6 +189,16 @@ func GetAlbumsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetAlbumHandler mendapatkan album by ID
+// @Summary      Get album by ID
+// @Description  Get album details by ID
+// @Tags         Albums
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Album ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /albums/{id} [get]
 func GetAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -190,6 +224,18 @@ func GetAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateAlbumHandler mengupdate album
+// @Summary      Update album
+// @Description  Update album information
+// @Tags         Albums
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                true  "Album ID"
+// @Param        request  body      UpdateAlbumRequest  true  "Update Album Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /albums/{id} [put]
 func UpdateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -288,6 +334,16 @@ func UpdateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteAlbumHandler menghapus album (soft delete)
+// @Summary      Delete album
+// @Description  Soft delete an album by ID
+// @Tags         Albums
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Album ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /albums/{id} [delete]
 func DeleteAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

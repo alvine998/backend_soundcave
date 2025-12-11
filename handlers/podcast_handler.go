@@ -37,6 +37,16 @@ type UpdatePodcastRequest struct {
 }
 
 // CreatePodcastHandler membuat podcast baru
+// @Summary      Create new podcast
+// @Description  Create a new podcast episode
+// @Tags         Podcasts
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreatePodcastRequest  true  "Podcast Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /podcasts [post]
 func CreatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreatePodcastRequest
 
@@ -88,6 +98,22 @@ func CreatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetPodcastsHandler mendapatkan semua podcasts dengan pagination
+// @Summary      Get all podcasts
+// @Description  Get paginated list of podcasts with filtering and search
+// @Tags         Podcasts
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        host     query     string  false  "Filter by host"
+// @Param        category query     string  false  "Filter by category"
+// @Param        season   query     int     false  "Filter by season"
+// @Param        search   query     string  false  "Search by title, host, or description"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /podcasts [get]
 func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var podcasts []models.Podcast
 
@@ -153,6 +179,16 @@ func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetPodcastHandler mendapatkan podcast by ID
+// @Summary      Get podcast by ID
+// @Description  Get podcast details by ID
+// @Tags         Podcasts
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Podcast ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /podcasts/{id} [get]
 func GetPodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -178,6 +214,18 @@ func GetPodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdatePodcastHandler mengupdate podcast
+// @Summary      Update podcast
+// @Description  Update podcast information
+// @Tags         Podcasts
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                 true  "Podcast ID"
+// @Param        request  body      UpdatePodcastRequest  true  "Update Podcast Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /podcasts/{id} [put]
 func UpdatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -270,6 +318,16 @@ func UpdatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeletePodcastHandler menghapus podcast (soft delete)
+// @Summary      Delete podcast
+// @Description  Soft delete a podcast by ID
+// @Tags         Podcasts
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Podcast ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /podcasts/{id} [delete]
 func DeletePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

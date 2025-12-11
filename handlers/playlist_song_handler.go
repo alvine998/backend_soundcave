@@ -20,6 +20,16 @@ type UpdatePlaylistSongRequest struct {
 }
 
 // CreatePlaylistSongHandler menambahkan lagu ke playlist
+// @Summary      Add song to playlist
+// @Description  Add a music track to a playlist
+// @Tags         PlaylistSongs
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreatePlaylistSongRequest  true  "Playlist Song Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /playlist-songs [post]
 func CreatePlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreatePlaylistSongRequest
 
@@ -120,6 +130,15 @@ func CreatePlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetPlaylistSongsHandler mendapatkan semua lagu dalam playlist
+// @Summary      Get playlist songs
+// @Description  Get all songs in a playlist
+// @Tags         PlaylistSongs
+// @Accept       json
+// @Produce      json
+// @Param        playlist_id  path      int  true  "Playlist ID"
+// @Success      200          {object}  map[string]interface{}
+// @Failure      500          {object}  map[string]interface{}
+// @Router       /playlist-songs/playlist/{playlist_id} [get]
 func GetPlaylistSongsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	playlistID := c.Params("playlist_id")
 
@@ -158,6 +177,16 @@ func GetPlaylistSongsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetPlaylistSongHandler mendapatkan playlist song by ID
+// @Summary      Get playlist song by ID
+// @Description  Get playlist song details by ID
+// @Tags         PlaylistSongs
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Playlist Song ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /playlist-songs/{id} [get]
 func GetPlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -183,6 +212,18 @@ func GetPlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdatePlaylistSongHandler mengupdate playlist song (biasanya untuk mengubah position)
+// @Summary      Update playlist song
+// @Description  Update playlist song position or information
+// @Tags         PlaylistSongs
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                    true  "Playlist Song ID"
+// @Param        request  body      UpdatePlaylistSongRequest  true  "Update Playlist Song Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /playlist-songs/{id} [put]
 func UpdatePlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -234,6 +275,17 @@ func UpdatePlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeletePlaylistSongHandler menghapus lagu dari playlist
+// DeletePlaylistSongHandler menghapus playlist song (soft delete)
+// @Summary      Delete playlist song
+// @Description  Remove a song from playlist by playlist song ID
+// @Tags         PlaylistSongs
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Playlist Song ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /playlist-songs/{id} [delete]
 func DeletePlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -267,6 +319,17 @@ func DeletePlaylistSongHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeletePlaylistSongByMusicHandler menghapus lagu dari playlist berdasarkan playlist_id dan music_id
+// @Summary      Delete playlist song by playlist and music
+// @Description  Remove a song from playlist by playlist ID and music ID
+// @Tags         PlaylistSongs
+// @Accept       json
+// @Produce      json
+// @Param        playlist_id  path      int  true  "Playlist ID"
+// @Param        music_id     path      int  true  "Music ID"
+// @Success      200          {object}  map[string]interface{}
+// @Failure      404          {object}  map[string]interface{}
+// @Failure      500          {object}  map[string]interface{}
+// @Router       /playlist-songs/playlist/{playlist_id}/music/{music_id} [delete]
 func DeletePlaylistSongByMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	playlistID := c.Params("playlist_id")
 	musicID := c.Params("music_id")

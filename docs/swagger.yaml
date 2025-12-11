@@ -1,5 +1,378 @@
 basePath: /api
 definitions:
+  handlers.CreateAlbumRequest:
+    properties:
+      album_type:
+        enum:
+        - single
+        - EP
+        - album
+        - compilation
+        type: string
+      artist:
+        type: string
+      artist_id:
+        type: integer
+      genre:
+        type: string
+      record_label:
+        type: string
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      title:
+        type: string
+      total_tracks:
+        minimum: 0
+        type: integer
+    required:
+    - album_type
+    - artist
+    - artist_id
+    - release_date
+    - title
+    type: object
+  handlers.CreateAppInfoRequest:
+    properties:
+      address:
+        type: string
+      app_links:
+        additionalProperties: true
+        type: object
+      app_name:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      features:
+        additionalProperties: true
+        type: object
+      launch_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      legal:
+        additionalProperties: true
+        type: object
+      phone:
+        type: string
+      social_media:
+        additionalProperties: true
+        type: object
+      stats:
+        additionalProperties: true
+        type: object
+      tagline:
+        type: string
+      version:
+        type: string
+    required:
+    - address
+    - app_name
+    - description
+    - email
+    - phone
+    - tagline
+    type: object
+  handlers.CreateArtistRequest:
+    properties:
+      bio:
+        type: string
+      country:
+        type: string
+      debut_year:
+        type: string
+      email:
+        type: string
+      genre:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      profile_image:
+        type: string
+      social_media:
+        additionalProperties: true
+        type: object
+      website:
+        type: string
+    required:
+    - bio
+    - debut_year
+    - email
+    - name
+    type: object
+  handlers.CreateGenreRequest:
+    properties:
+      color:
+        description: 'Hex color code (e.g., #FF5733)'
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - description
+    - name
+    type: object
+  handlers.CreateMusicRequest:
+    properties:
+      album:
+        type: string
+      album_id:
+        type: integer
+      artist:
+        type: string
+      artist_id:
+        type: integer
+      audio_file_url:
+        type: string
+      cover_image_url:
+        type: string
+      description:
+        type: string
+      duration:
+        description: 'Format: MM:SS atau HH:MM:SS'
+        type: string
+      explicit:
+        type: boolean
+      genre:
+        type: string
+      language:
+        type: string
+      like_count:
+        type: integer
+      lyrics:
+        type: string
+      play_count:
+        type: integer
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      tags:
+        type: string
+      title:
+        type: string
+    required:
+    - artist
+    - artist_id
+    - audio_file_url
+    - duration
+    - genre
+    - language
+    - release_date
+    - title
+    type: object
+  handlers.CreateMusicVideoRequest:
+    properties:
+      artist:
+        type: string
+      artist_id:
+        type: integer
+      description:
+        type: string
+      duration:
+        description: 'Format: MM:SS atau HH:MM:SS'
+        type: string
+      genre:
+        type: string
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      thumbnail:
+        type: string
+      title:
+        type: string
+      video_url:
+        type: string
+    required:
+    - artist
+    - artist_id
+    - duration
+    - genre
+    - release_date
+    - title
+    - video_url
+    type: object
+  handlers.CreateNewsRequest:
+    properties:
+      author:
+        type: string
+      category:
+        type: string
+      content:
+        type: string
+      image_url:
+        type: string
+      is_published:
+        type: boolean
+      published_at:
+        description: 'Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"'
+        type: string
+      summary:
+        type: string
+      tags:
+        type: string
+      title:
+        type: string
+    required:
+    - author
+    - category
+    - content
+    - title
+    type: object
+  handlers.CreateNotificationRequest:
+    properties:
+      date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      is_read:
+        type: boolean
+      message:
+        type: string
+      title:
+        type: string
+      type:
+        enum:
+        - info
+        - success
+        - warning
+        - error
+        type: string
+      user_id:
+        type: integer
+    required:
+    - date
+    - message
+    - title
+    - user_id
+    type: object
+  handlers.CreatePlaylistRequest:
+    properties:
+      cover_image:
+        type: string
+      description:
+        type: string
+      is_public:
+        type: boolean
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handlers.CreatePlaylistSongRequest:
+    properties:
+      music_id:
+        type: integer
+      playlist_id:
+        type: integer
+      position:
+        description: Optional, jika tidak di-set akan ditambahkan di akhir
+        type: integer
+    required:
+    - music_id
+    - playlist_id
+    type: object
+  handlers.CreatePodcastRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      duration:
+        description: 'Format: MM:SS atau HH:MM:SS'
+        type: string
+      episode_number:
+        type: integer
+      host:
+        type: string
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      season:
+        type: integer
+      thumbnail:
+        type: string
+      title:
+        type: string
+      video_url:
+        type: string
+    required:
+    - category
+    - description
+    - duration
+    - host
+    - release_date
+    - title
+    - video_url
+    type: object
+  handlers.CreateSubscriptionPlanRequest:
+    properties:
+      ads_enabled:
+        type: boolean
+      audio_quality:
+        type: string
+      description:
+        type: string
+      duration:
+        type: string
+      features:
+        additionalProperties: true
+        type: object
+      is_popular:
+        type: boolean
+      max_downloads:
+        description: -1 means unlimited
+        type: integer
+      max_playlists:
+        description: -1 means unlimited
+        type: integer
+      name:
+        type: string
+      offline_mode:
+        type: boolean
+      price:
+        type: string
+    required:
+    - audio_quality
+    - description
+    - duration
+    - features
+    - name
+    - price
+    type: object
+  handlers.CreateUserRequest:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      location:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      profile_image:
+        type: string
+      role:
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    type: object
+  handlers.GoogleAuthRequest:
+    properties:
+      id_token:
+        type: string
+    required:
+    - id_token
+    type: object
   handlers.LoginRequest:
     properties:
       email:
@@ -26,6 +399,293 @@ definitions:
     - full_name
     - password
     type: object
+  handlers.UpdateAlbumRequest:
+    properties:
+      album_type:
+        enum:
+        - single
+        - EP
+        - album
+        - compilation
+        type: string
+      artist:
+        type: string
+      artist_id:
+        type: integer
+      genre:
+        type: string
+      record_label:
+        type: string
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      title:
+        type: string
+      total_tracks:
+        minimum: 0
+        type: integer
+    type: object
+  handlers.UpdateAppInfoRequest:
+    properties:
+      address:
+        type: string
+      app_links:
+        additionalProperties: true
+        type: object
+      app_name:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      features:
+        additionalProperties: true
+        type: object
+      launch_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      legal:
+        additionalProperties: true
+        type: object
+      phone:
+        type: string
+      social_media:
+        additionalProperties: true
+        type: object
+      stats:
+        additionalProperties: true
+        type: object
+      tagline:
+        type: string
+      version:
+        type: string
+    type: object
+  handlers.UpdateArtistRequest:
+    properties:
+      bio:
+        type: string
+      country:
+        type: string
+      debut_year:
+        type: string
+      email:
+        type: string
+      genre:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      profile_image:
+        type: string
+      social_media:
+        additionalProperties: true
+        type: object
+      website:
+        type: string
+    type: object
+  handlers.UpdateGenreRequest:
+    properties:
+      color:
+        description: 'Hex color code (e.g., #FF5733)'
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  handlers.UpdateMusicRequest:
+    properties:
+      album:
+        type: string
+      album_id:
+        type: integer
+      artist:
+        type: string
+      artist_id:
+        type: integer
+      audio_file_url:
+        type: string
+      cover_image_url:
+        type: string
+      description:
+        type: string
+      duration:
+        description: 'Format: MM:SS atau HH:MM:SS'
+        type: string
+      explicit:
+        type: boolean
+      genre:
+        type: string
+      language:
+        type: string
+      like_count:
+        type: integer
+      lyrics:
+        type: string
+      play_count:
+        type: integer
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      tags:
+        type: string
+      title:
+        type: string
+    type: object
+  handlers.UpdateMusicVideoRequest:
+    properties:
+      artist:
+        type: string
+      artist_id:
+        type: integer
+      description:
+        type: string
+      duration:
+        description: 'Format: MM:SS atau HH:MM:SS'
+        type: string
+      genre:
+        type: string
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      thumbnail:
+        type: string
+      title:
+        type: string
+      video_url:
+        type: string
+    type: object
+  handlers.UpdateNewsRequest:
+    properties:
+      author:
+        type: string
+      category:
+        type: string
+      content:
+        type: string
+      image_url:
+        type: string
+      is_published:
+        type: boolean
+      published_at:
+        description: 'Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"'
+        type: string
+      summary:
+        type: string
+      tags:
+        type: string
+      title:
+        type: string
+    type: object
+  handlers.UpdateNotificationRequest:
+    properties:
+      date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      is_read:
+        type: boolean
+      message:
+        type: string
+      title:
+        type: string
+      type:
+        enum:
+        - info
+        - success
+        - warning
+        - error
+        type: string
+      user_id:
+        type: integer
+    type: object
+  handlers.UpdatePlaylistRequest:
+    properties:
+      cover_image:
+        type: string
+      description:
+        type: string
+      is_public:
+        type: boolean
+      name:
+        type: string
+    type: object
+  handlers.UpdatePlaylistSongRequest:
+    properties:
+      position:
+        type: integer
+    type: object
+  handlers.UpdatePodcastRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      duration:
+        description: 'Format: MM:SS atau HH:MM:SS'
+        type: string
+      episode_number:
+        type: integer
+      host:
+        type: string
+      release_date:
+        description: 'Format: "2006-01-02"'
+        type: string
+      season:
+        type: integer
+      thumbnail:
+        type: string
+      title:
+        type: string
+      video_url:
+        type: string
+    type: object
+  handlers.UpdateSubscriptionPlanRequest:
+    properties:
+      ads_enabled:
+        type: boolean
+      audio_quality:
+        type: string
+      description:
+        type: string
+      duration:
+        type: string
+      features:
+        additionalProperties: true
+        type: object
+      is_popular:
+        type: boolean
+      max_downloads:
+        type: integer
+      max_playlists:
+        type: integer
+      name:
+        type: string
+      offline_mode:
+        type: boolean
+      price:
+        type: string
+    type: object
+  handlers.UpdateUserRequest:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      location:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      profile_image:
+        type: string
+      role:
+        type: string
+    type: object
 host: localhost:6002
 info:
   contact:
@@ -39,6 +699,578 @@ info:
   title: SoundCave Backend API
   version: "1.0"
 paths:
+  /albums:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of albums with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by artist
+        in: query
+        name: artist
+        type: string
+      - description: Search by title or artist
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all albums
+      tags:
+      - Albums
+    post:
+      consumes:
+      - application/json
+      description: Create a new album
+      parameters:
+      - description: Album Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateAlbumRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new album
+      tags:
+      - Albums
+  /albums/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete an album by ID
+      parameters:
+      - description: Album ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete album
+      tags:
+      - Albums
+    get:
+      consumes:
+      - application/json
+      description: Get album details by ID
+      parameters:
+      - description: Album ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get album by ID
+      tags:
+      - Albums
+    put:
+      consumes:
+      - application/json
+      description: Update album information
+      parameters:
+      - description: Album ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Album Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateAlbumRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update album
+      tags:
+      - Albums
+  /app-info:
+    post:
+      consumes:
+      - application/json
+      description: Create a new app information entry
+      parameters:
+      - description: App Info Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateAppInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new app info
+      tags:
+      - AppInfo
+  /app-info/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete an app information entry by ID
+      parameters:
+      - description: App Info ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete app info
+      tags:
+      - AppInfo
+    get:
+      consumes:
+      - application/json
+      description: Get app information details by ID
+      parameters:
+      - description: App Info ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get app info by ID
+      tags:
+      - AppInfo
+    put:
+      consumes:
+      - application/json
+      description: Update app information
+      parameters:
+      - description: App Info ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update App Info Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateAppInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update app info
+      tags:
+      - AppInfo
+  /app-info/latest:
+    get:
+      consumes:
+      - application/json
+      description: Get the latest app information entry
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get latest app info
+      tags:
+      - AppInfo
+  /artists:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of artists with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Search by name
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all artists
+      tags:
+      - Artists
+    post:
+      consumes:
+      - application/json
+      description: Create a new artist
+      parameters:
+      - description: Artist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateArtistRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new artist
+      tags:
+      - Artists
+  /artists/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete an artist by ID
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete artist
+      tags:
+      - Artists
+    get:
+      consumes:
+      - application/json
+      description: Get artist details by ID
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get artist by ID
+      tags:
+      - Artists
+    put:
+      consumes:
+      - application/json
+      description: Update artist information
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Artist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateArtistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update artist
+      tags:
+      - Artists
+  /auth/google:
+    post:
+      consumes:
+      - application/json
+      description: Login or register using Google ID token
+      parameters:
+      - description: Google Auth Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.GoogleAuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Google authentication
+      tags:
+      - Auth
   /auth/login:
     post:
       consumes:
@@ -115,6 +1347,1803 @@ paths:
       summary: Register new user
       tags:
       - Auth
+  /dashboard/customer-report:
+    get:
+      consumes:
+      - application/json
+      description: Get customer report with revenue, growth, and analytics
+      parameters:
+      - default: 30
+        description: Report period in days
+        in: query
+        name: period
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get customer report
+      tags:
+      - Dashboard
+  /dashboard/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get dashboard statistics including counts and metrics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get dashboard statistics
+      tags:
+      - Dashboard
+  /genres:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of genres with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Search by name
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all genres
+      tags:
+      - Genres
+    post:
+      consumes:
+      - application/json
+      description: Create a new music genre
+      parameters:
+      - description: Genre Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateGenreRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new genre
+      tags:
+      - Genres
+  /genres/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a genre by ID
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete genre
+      tags:
+      - Genres
+    get:
+      consumes:
+      - application/json
+      description: Get genre details by ID
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get genre by ID
+      tags:
+      - Genres
+    put:
+      consumes:
+      - application/json
+      description: Update genre information
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Genre Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateGenreRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update genre
+      tags:
+      - Genres
+  /images:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of uploaded images
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all images
+      tags:
+      - Images
+  /images/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an image by ID
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete image
+      tags:
+      - Images
+  /images/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a single image file to Firebase Storage
+      parameters:
+      - description: Image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 'Folder path (default: images)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload image
+      tags:
+      - Images
+  /music-videos:
+    post:
+      consumes:
+      - application/json
+      description: Create a new music video
+      parameters:
+      - description: Music Video Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateMusicVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new music video
+      tags:
+      - MusicVideos
+  /music-videos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a music video by ID
+      parameters:
+      - description: Music Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete music video
+      tags:
+      - MusicVideos
+    get:
+      consumes:
+      - application/json
+      description: Get music video details by ID
+      parameters:
+      - description: Music Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get music video by ID
+      tags:
+      - MusicVideos
+    put:
+      consumes:
+      - application/json
+      description: Update music video information
+      parameters:
+      - description: Music Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Music Video Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateMusicVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update music video
+      tags:
+      - MusicVideos
+  /music-videos/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a music video file to Firebase Storage (max 150MB)
+      parameters:
+      - description: Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 'Folder path (default: music-videos)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload music video file
+      tags:
+      - MusicVideos
+  /musics:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of musics with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by artist
+        in: query
+        name: artist
+        type: string
+      - description: Filter by genre
+        in: query
+        name: genre
+        type: string
+      - description: Filter by album ID
+        in: query
+        name: album_id
+        type: integer
+      - description: Search by title, artist, or album
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all musics
+      tags:
+      - Musics
+    post:
+      consumes:
+      - application/json
+      description: Create a new music track
+      parameters:
+      - description: Music Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateMusicRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new music
+      tags:
+      - Musics
+  /musics/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a music by ID
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete music
+      tags:
+      - Musics
+    get:
+      consumes:
+      - application/json
+      description: Get music details by ID
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get music by ID
+      tags:
+      - Musics
+    put:
+      consumes:
+      - application/json
+      description: Update music information
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Music Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateMusicRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update music
+      tags:
+      - Musics
+  /musics/{id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Increment like count for a music track
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Increment like count
+      tags:
+      - Musics
+  /musics/{id}/play:
+    post:
+      consumes:
+      - application/json
+      description: Increment play count for a music track
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Increment play count
+      tags:
+      - Musics
+  /musics/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a music file to Firebase Storage (max 5MB)
+      parameters:
+      - description: Music file (MP3, WAV, OGG, M4A, AAC, FLAC)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 'Folder path (default: musics)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload music file
+      tags:
+      - Musics
+  /news:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of news articles with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      - description: Filter by author
+        in: query
+        name: author
+        type: string
+      - description: Filter by published status
+        in: query
+        name: published
+        type: boolean
+      - description: Search by title or content
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all news
+      tags:
+      - News
+    post:
+      consumes:
+      - application/json
+      description: Create a new news article
+      parameters:
+      - description: News Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateNewsRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new news
+      tags:
+      - News
+  /news/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a news article by ID
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete news
+      tags:
+      - News
+    put:
+      consumes:
+      - application/json
+      description: Update news article information
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update News Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateNewsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update news
+      tags:
+      - News
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of notifications with filtering
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by type
+        in: query
+        name: type
+        type: string
+      - description: Search by title or message
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all notifications
+      tags:
+      - Notifications
+    post:
+      consumes:
+      - application/json
+      description: Create a new notification
+      parameters:
+      - description: Notification Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateNotificationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new notification
+      tags:
+      - Notifications
+  /notifications/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a notification by ID
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete notification
+      tags:
+      - Notifications
+    get:
+      consumes:
+      - application/json
+      description: Get notification details by ID
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get notification by ID
+      tags:
+      - Notifications
+    put:
+      consumes:
+      - application/json
+      description: Update notification information
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Notification Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateNotificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update notification
+      tags:
+      - Notifications
+  /notifications/{id}/read:
+    post:
+      consumes:
+      - application/json
+      description: Mark a notification as read by ID
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Mark notification as read
+      tags:
+      - Notifications
+  /playlist-songs:
+    post:
+      consumes:
+      - application/json
+      description: Add a music track to a playlist
+      parameters:
+      - description: Playlist Song Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreatePlaylistSongRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add song to playlist
+      tags:
+      - PlaylistSongs
+  /playlist-songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a song from playlist by playlist song ID
+      parameters:
+      - description: Playlist Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete playlist song
+      tags:
+      - PlaylistSongs
+    get:
+      consumes:
+      - application/json
+      description: Get playlist song details by ID
+      parameters:
+      - description: Playlist Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get playlist song by ID
+      tags:
+      - PlaylistSongs
+    put:
+      consumes:
+      - application/json
+      description: Update playlist song position or information
+      parameters:
+      - description: Playlist Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Playlist Song Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdatePlaylistSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update playlist song
+      tags:
+      - PlaylistSongs
+  /playlist-songs/playlist/{playlist_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all songs in a playlist
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: playlist_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get playlist songs
+      tags:
+      - PlaylistSongs
+  /playlist-songs/playlist/{playlist_id}/music/{music_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a song from playlist by playlist ID and music ID
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: playlist_id
+        required: true
+        type: integer
+      - description: Music ID
+        in: path
+        name: music_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete playlist song by playlist and music
+      tags:
+      - PlaylistSongs
+  /playlists:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of playlists with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by user ID
+        in: query
+        name: user_id
+        type: integer
+      - description: Search by name
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all playlists
+      tags:
+      - Playlists
+    post:
+      consumes:
+      - application/json
+      description: Create a new playlist
+      parameters:
+      - description: Playlist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreatePlaylistRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new playlist
+      tags:
+      - Playlists
+  /playlists/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a playlist by ID
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete playlist
+      tags:
+      - Playlists
+    get:
+      consumes:
+      - application/json
+      description: Get playlist details by ID
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get playlist by ID
+      tags:
+      - Playlists
+    put:
+      consumes:
+      - application/json
+      description: Update playlist information
+      parameters:
+      - description: Playlist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Playlist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdatePlaylistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update playlist
+      tags:
+      - Playlists
+  /podcasts:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of podcasts with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by host
+        in: query
+        name: host
+        type: string
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      - description: Filter by season
+        in: query
+        name: season
+        type: integer
+      - description: Search by title, host, or description
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all podcasts
+      tags:
+      - Podcasts
+    post:
+      consumes:
+      - application/json
+      description: Create a new podcast episode
+      parameters:
+      - description: Podcast Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreatePodcastRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new podcast
+      tags:
+      - Podcasts
+  /podcasts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a podcast by ID
+      parameters:
+      - description: Podcast ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete podcast
+      tags:
+      - Podcasts
+    get:
+      consumes:
+      - application/json
+      description: Get podcast details by ID
+      parameters:
+      - description: Podcast ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get podcast by ID
+      tags:
+      - Podcasts
+    put:
+      consumes:
+      - application/json
+      description: Update podcast information
+      parameters:
+      - description: Podcast ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Podcast Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdatePodcastRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update podcast
+      tags:
+      - Podcasts
+  /podcasts/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a podcast video file to Firebase Storage (max 200MB)
+      parameters:
+      - description: Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 'Folder path (default: podcast-videos)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload podcast video file
+      tags:
+      - Podcasts
   /profile:
     get:
       consumes:
@@ -148,6 +3177,326 @@ paths:
       summary: Get user profile
       tags:
       - Auth
+  /subscription-plans:
+    post:
+      consumes:
+      - application/json
+      description: Create a new subscription plan
+      parameters:
+      - description: Subscription Plan Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateSubscriptionPlanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new subscription plan
+      tags:
+      - SubscriptionPlans
+  /subscription-plans/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a subscription plan by ID
+      parameters:
+      - description: Subscription Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete subscription plan
+      tags:
+      - SubscriptionPlans
+    get:
+      consumes:
+      - application/json
+      description: Get subscription plan details by ID
+      parameters:
+      - description: Subscription Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get subscription plan by ID
+      tags:
+      - SubscriptionPlans
+    put:
+      consumes:
+      - application/json
+      description: Update subscription plan information
+      parameters:
+      - description: Subscription Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Subscription Plan Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateSubscriptionPlanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update subscription plan
+      tags:
+      - SubscriptionPlans
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of users with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by role
+        in: query
+        name: role
+        type: string
+      - description: Search by name or email
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account (admin only)
+      parameters:
+      - description: User Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new user
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete user
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Get user details by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get user by ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update user information
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update User Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update user
+      tags:
+      - Users
 securityDefinitions:
   BearerAuth:
     description: 'Type "Bearer" followed by a space and JWT token. Example: "Bearer

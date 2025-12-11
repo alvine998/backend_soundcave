@@ -30,6 +30,16 @@ type UpdateNotificationRequest struct {
 }
 
 // CreateNotificationHandler membuat notification baru
+// @Summary      Create new notification
+// @Description  Create a new notification
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateNotificationRequest  true  "Notification Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /notifications [post]
 func CreateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateNotificationRequest
 
@@ -103,6 +113,20 @@ func CreateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetNotificationsHandler mendapatkan semua notifications dengan pagination
+// @Summary      Get all notifications
+// @Description  Get paginated list of notifications with filtering
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        type     query     string  false  "Filter by type"
+// @Param        search   query     string  false  "Search by title or message"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /notifications [get]
 func GetNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var notifications []models.Notification
 
@@ -171,6 +195,16 @@ func GetNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetNotificationHandler mendapatkan notification by ID
+// @Summary      Get notification by ID
+// @Description  Get notification details by ID
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Notification ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /notifications/{id} [get]
 func GetNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -256,6 +290,18 @@ func GetUserNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateNotificationHandler mengupdate notification
+// @Summary      Update notification
+// @Description  Update notification information
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                    true  "Notification ID"
+// @Param        request  body      UpdateNotificationRequest  true  "Update Notification Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /notifications/{id} [put]
 func UpdateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -346,6 +392,16 @@ func UpdateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // MarkAsReadHandler menandai notification sebagai sudah dibaca
+// @Summary      Mark notification as read
+// @Description  Mark a notification as read by ID
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Notification ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /notifications/{id}/read [post]
 func MarkAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -406,6 +462,16 @@ func MarkAllAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteNotificationHandler menghapus notification (soft delete)
+// @Summary      Delete notification
+// @Description  Soft delete a notification by ID
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Notification ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /notifications/{id} [delete]
 func DeleteNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

@@ -27,7 +27,7 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:6002
+// @host      api.rezim.site
 // @BasePath  /api
 
 // @securityDefinitions.apikey BearerAuth

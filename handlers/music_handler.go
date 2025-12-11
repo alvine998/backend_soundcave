@@ -52,6 +52,16 @@ type UpdateMusicRequest struct {
 }
 
 // CreateMusicHandler membuat music baru
+// @Summary      Create new music
+// @Description  Create a new music track
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateMusicRequest  true  "Music Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /musics [post]
 func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateMusicRequest
 
@@ -125,6 +135,22 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetMusicsHandler mendapatkan semua musics dengan pagination
+// @Summary      Get all musics
+// @Description  Get paginated list of musics with filtering and search
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        page        query     int     false  "Page number" default(1)
+// @Param        limit       query     int     false  "Items per page" default(10)
+// @Param        artist      query     string  false  "Filter by artist"
+// @Param        genre       query     string  false  "Filter by genre"
+// @Param        album_id    query     int     false  "Filter by album ID"
+// @Param        search      query     string  false  "Search by title, artist, or album"
+// @Param        sort_by     query     string  false  "Sort field" default(created_at)
+// @Param        order       query     string  false  "Sort order" default(desc)
+// @Success      200         {object}  map[string]interface{}
+// @Failure      500         {object}  map[string]interface{}
+// @Router       /musics [get]
 func GetMusicsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var musics []models.Music
 
@@ -203,6 +229,16 @@ func GetMusicsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetMusicHandler mendapatkan music by ID
+// @Summary      Get music by ID
+// @Description  Get music details by ID
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /musics/{id} [get]
 func GetMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -228,6 +264,18 @@ func GetMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateMusicHandler mengupdate music
+// @Summary      Update music
+// @Description  Update music information
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                true  "Music ID"
+// @Param        request  body      UpdateMusicRequest  true  "Update Music Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /musics/{id} [put]
 func UpdateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -348,6 +396,16 @@ func UpdateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteMusicHandler menghapus music (soft delete)
+// @Summary      Delete music
+// @Description  Soft delete a music by ID
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /musics/{id} [delete]
 func DeleteMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -381,6 +439,16 @@ func DeleteMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // IncrementPlayCountHandler menambah play count
+// @Summary      Increment play count
+// @Description  Increment play count for a music track
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /musics/{id}/play [post]
 func IncrementPlayCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -423,6 +491,16 @@ func IncrementPlayCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // IncrementLikeCountHandler menambah like count
+// @Summary      Increment like count
+// @Description  Increment like count for a music track
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /musics/{id}/like [post]
 func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

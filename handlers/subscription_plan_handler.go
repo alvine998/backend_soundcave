@@ -39,6 +39,16 @@ type UpdateSubscriptionPlanRequest struct {
 }
 
 // CreateSubscriptionPlanHandler membuat subscription_plan baru
+// @Summary      Create new subscription plan
+// @Description  Create a new subscription plan
+// @Tags         SubscriptionPlans
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateSubscriptionPlanRequest  true  "Subscription Plan Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /subscription-plans [post]
 func CreateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateSubscriptionPlanRequest
 
@@ -191,6 +201,16 @@ func GetSubscriptionPlansHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetSubscriptionPlanHandler mendapatkan subscription_plan by ID
+// @Summary      Get subscription plan by ID
+// @Description  Get subscription plan details by ID
+// @Tags         SubscriptionPlans
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Subscription Plan ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /subscription-plans/{id} [get]
 func GetSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -216,6 +236,18 @@ func GetSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateSubscriptionPlanHandler mengupdate subscription_plan
+// @Summary      Update subscription plan
+// @Description  Update subscription plan information
+// @Tags         SubscriptionPlans
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                        true  "Subscription Plan ID"
+// @Param        request  body      UpdateSubscriptionPlanRequest  true  "Update Subscription Plan Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /subscription-plans/{id} [put]
 func UpdateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -304,6 +336,16 @@ func UpdateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteSubscriptionPlanHandler menghapus subscription_plan (soft delete)
+// @Summary      Delete subscription plan
+// @Description  Soft delete a subscription plan by ID
+// @Tags         SubscriptionPlans
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Subscription Plan ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /subscription-plans/{id} [delete]
 func DeleteSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -335,4 +377,3 @@ func DeleteSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Subscription plan berhasil dihapus",
 	})
 }
-

@@ -25,6 +25,16 @@ type UpdatePlaylistRequest struct {
 }
 
 // CreatePlaylistHandler membuat playlist baru
+// @Summary      Create new playlist
+// @Description  Create a new playlist
+// @Tags         Playlists
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreatePlaylistRequest  true  "Playlist Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /playlists [post]
 func CreatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreatePlaylistRequest
 
@@ -66,6 +76,18 @@ func CreatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetPlaylistsHandler mendapatkan semua playlists dengan pagination
+// @Summary      Get all playlists
+// @Description  Get paginated list of playlists with filtering and search
+// @Tags         Playlists
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        user_id  query     int     false  "Filter by user ID"
+// @Param        search   query     string  false  "Search by name"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /playlists [get]
 func GetPlaylistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var playlists []models.Playlist
 
@@ -124,6 +146,16 @@ func GetPlaylistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetPlaylistHandler mendapatkan playlist by ID
+// @Summary      Get playlist by ID
+// @Description  Get playlist details by ID
+// @Tags         Playlists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Playlist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /playlists/{id} [get]
 func GetPlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -149,6 +181,18 @@ func GetPlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdatePlaylistHandler mengupdate playlist
+// @Summary      Update playlist
+// @Description  Update playlist information
+// @Tags         Playlists
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                   true  "Playlist ID"
+// @Param        request  body      UpdatePlaylistRequest  true  "Update Playlist Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /playlists/{id} [put]
 func UpdatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -209,6 +253,16 @@ func UpdatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeletePlaylistHandler menghapus playlist (soft delete)
+// @Summary      Delete playlist
+// @Description  Soft delete a playlist by ID
+// @Tags         Playlists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Playlist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /playlists/{id} [delete]
 func DeletePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -240,4 +294,3 @@ func DeletePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Playlist berhasil dihapus",
 	})
 }
-

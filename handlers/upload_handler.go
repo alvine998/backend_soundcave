@@ -18,6 +18,17 @@ import (
 )
 
 // UploadImageHandler menangani upload gambar ke Firebase Storage
+// @Summary      Upload image
+// @Description  Upload a single image file to Firebase Storage
+// @Tags         Images
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file    formData  file    true   "Image file"
+// @Param        folder  formData  string  false  "Folder path (default: images)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /images/upload [post]
 func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
 	file, err := c.FormFile("file")
@@ -343,6 +354,16 @@ func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetImagesHandler mendapatkan semua gambar
+// @Summary      Get all images
+// @Description  Get paginated list of uploaded images
+// @Tags         Images
+// @Accept       json
+// @Produce      json
+// @Param        page   query     int     false  "Page number" default(1)
+// @Param        limit  query     int     false  "Items per page" default(10)
+// @Success      200    {object}  map[string]interface{}
+// @Failure      500    {object}  map[string]interface{}
+// @Router       /images [get]
 func GetImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var images []models.Image
 
@@ -361,6 +382,16 @@ func GetImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteImageHandler menghapus gambar
+// @Summary      Delete image
+// @Description  Delete an image by ID
+// @Tags         Images
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Image ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /images/{id} [delete]
 func DeleteImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -399,6 +430,17 @@ func DeleteImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UploadMusicHandler menangani upload file music ke Firebase Storage
+// @Summary      Upload music file
+// @Description  Upload a music file to Firebase Storage (max 5MB)
+// @Tags         Musics
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file    formData  file    true   "Music file (MP3, WAV, OGG, M4A, AAC, FLAC)"
+// @Param        folder  formData  string  false  "Folder path (default: musics)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /musics/upload [post]
 func UploadMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
 	file, err := c.FormFile("file")
@@ -558,6 +600,17 @@ func UploadMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UploadMusicVideoHandler menangani upload file music video ke Firebase Storage
+// @Summary      Upload music video file
+// @Description  Upload a music video file to Firebase Storage (max 150MB)
+// @Tags         MusicVideos
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file    formData  file    true   "Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)"
+// @Param        folder  formData  string  false  "Folder path (default: music-videos)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /music-videos/upload [post]
 func UploadMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
 	file, err := c.FormFile("file")
@@ -715,6 +768,17 @@ func UploadMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UploadPodcastVideoHandler menangani upload file podcast video ke Firebase Storage
+// @Summary      Upload podcast video file
+// @Description  Upload a podcast video file to Firebase Storage (max 200MB)
+// @Tags         Podcasts
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file    formData  file    true   "Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)"
+// @Param        folder  formData  string  false  "Folder path (default: podcast-videos)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /podcasts/upload [post]
 func UploadPodcastVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
 	file, err := c.FormFile("file")

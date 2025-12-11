@@ -8,6 +8,15 @@ import (
 )
 
 // GetDashboardStatsHandler mendapatkan statistik dashboard
+// @Summary      Get dashboard statistics
+// @Description  Get dashboard statistics including counts and metrics
+// @Tags         Dashboard
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /dashboard/stats [get]
 func GetDashboardStatsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	stats := make(map[string]interface{})
 

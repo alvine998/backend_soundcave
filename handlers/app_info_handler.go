@@ -43,6 +43,16 @@ type UpdateAppInfoRequest struct {
 }
 
 // CreateAppInfoHandler membuat app_info baru
+// @Summary      Create new app info
+// @Description  Create a new app information entry
+// @Tags         AppInfo
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateAppInfoRequest  true  "App Info Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /app-info [post]
 func CreateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateAppInfoRequest
 
@@ -177,6 +187,16 @@ func GetAppInfosHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetAppInfoHandler mendapatkan app_info by ID
+// @Summary      Get app info by ID
+// @Description  Get app information details by ID
+// @Tags         AppInfo
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "App Info ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /app-info/{id} [get]
 func GetAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -202,6 +222,15 @@ func GetAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetLatestAppInfoHandler mendapatkan app_info terbaru (biasanya hanya satu)
+// @Summary      Get latest app info
+// @Description  Get the latest app information entry
+// @Tags         AppInfo
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /app-info/latest [get]
 func GetLatestAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var appInfo models.AppInfo
 	if err := db.Order("created_at DESC").First(&appInfo).Error; err != nil {
@@ -225,6 +254,18 @@ func GetLatestAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateAppInfoHandler mengupdate app_info
+// @Summary      Update app info
+// @Description  Update app information
+// @Tags         AppInfo
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                 true  "App Info ID"
+// @Param        request  body      UpdateAppInfoRequest  true  "Update App Info Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /app-info/{id} [put]
 func UpdateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -329,6 +370,16 @@ func UpdateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteAppInfoHandler menghapus app_info (soft delete)
+// @Summary      Delete app info
+// @Description  Soft delete an app information entry by ID
+// @Tags         AppInfo
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "App Info ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /app-info/{id} [delete]
 func DeleteAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -360,4 +411,3 @@ func DeleteAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "App info berhasil dihapus",
 	})
 }
-

@@ -11,6 +11,16 @@ import (
 )
 
 // GetCustomerReportHandler mendapatkan laporan customer dengan revenue, growth, dll
+// @Summary      Get customer report
+// @Description  Get customer report with revenue, growth, and analytics
+// @Tags         Dashboard
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        period  query     int     false  "Report period in days" default(30)
+// @Success      200     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /dashboard/customer-report [get]
 func GetCustomerReportHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Get period from query (default: 30 days)
 	periodDays := c.QueryInt("period", 30)

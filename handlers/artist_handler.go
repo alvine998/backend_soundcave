@@ -36,6 +36,16 @@ type UpdateArtistRequest struct {
 }
 
 // CreateArtistHandler membuat artist baru
+// @Summary      Create new artist
+// @Description  Create a new artist
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateArtistRequest  true  "Artist Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /artists [post]
 func CreateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateArtistRequest
 
@@ -92,6 +102,19 @@ func CreateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetArtistsHandler mendapatkan semua artists dengan pagination
+// @Summary      Get all artists
+// @Description  Get paginated list of artists with filtering and search
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        search   query     string  false  "Search by name"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /artists [get]
 func GetArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var artists []models.Artist
 
@@ -157,6 +180,16 @@ func GetArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetArtistHandler mendapatkan artist by ID
+// @Summary      Get artist by ID
+// @Description  Get artist details by ID
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Artist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /artists/{id} [get]
 func GetArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -182,6 +215,18 @@ func GetArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateArtistHandler mengupdate artist
+// @Summary      Update artist
+// @Description  Update artist information
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                 true  "Artist ID"
+// @Param        request  body      UpdateArtistRequest  true  "Update Artist Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /artists/{id} [put]
 func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -274,6 +319,16 @@ func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteArtistHandler menghapus artist (soft delete)
+// @Summary      Delete artist
+// @Description  Soft delete an artist by ID
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Artist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /artists/{id} [delete]
 func DeleteArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

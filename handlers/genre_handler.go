@@ -32,6 +32,16 @@ func validateHexColor(color string) bool {
 }
 
 // CreateGenreHandler membuat genre baru
+// @Summary      Create new genre
+// @Description  Create a new music genre
+// @Tags         Genres
+// @Accept       json
+// @Produce      json
+// @Param        request  body      CreateGenreRequest  true  "Genre Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /genres [post]
 func CreateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateGenreRequest
 
@@ -85,6 +95,19 @@ func CreateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetGenresHandler mendapatkan semua genres dengan pagination
+// @Summary      Get all genres
+// @Description  Get paginated list of genres with filtering and search
+// @Tags         Genres
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        search   query     string  false  "Search by name"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /genres [get]
 func GetGenresHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var genres []models.Genre
 
@@ -135,6 +158,16 @@ func GetGenresHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetGenreHandler mendapatkan genre by ID
+// @Summary      Get genre by ID
+// @Description  Get genre details by ID
+// @Tags         Genres
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Genre ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /genres/{id} [get]
 func GetGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -160,6 +193,18 @@ func GetGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UpdateGenreHandler mengupdate genre
+// @Summary      Update genre
+// @Description  Update genre information
+// @Tags         Genres
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                true  "Genre ID"
+// @Param        request  body      UpdateGenreRequest  true  "Update Genre Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /genres/{id} [put]
 func UpdateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 
@@ -231,6 +276,16 @@ func UpdateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // DeleteGenreHandler menghapus genre (soft delete)
+// @Summary      Delete genre
+// @Description  Soft delete a genre by ID
+// @Tags         Genres
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Genre ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /genres/{id} [delete]
 func DeleteGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

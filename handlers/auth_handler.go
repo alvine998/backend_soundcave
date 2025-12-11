@@ -209,6 +209,17 @@ func LoginHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GoogleAuthHandler menangani login dengan Firebase Google Auth
+// @Summary      Google authentication
+// @Description  Login or register using Google ID token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      GoogleAuthRequest  true  "Google Auth Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /auth/google [post]
 func GoogleAuthHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req GoogleAuthRequest
 
