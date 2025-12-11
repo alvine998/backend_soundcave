@@ -17,6 +17,7 @@ type News struct {
 	ImageURL    *string        `json:"image_url" gorm:"size:500"`
 	PublishedAt *time.Time     `json:"published_at" gorm:"type:datetime"`
 	IsPublished *bool          `json:"is_published" gorm:"type:tinyint(1);default:0"`
+	IsHeadline  *bool          `json:"is_headline" gorm:"type:tinyint(1);default:0"`
 	Views       *int           `json:"views" gorm:"default:0"`
 	Tags        *string        `json:"tags" gorm:"type:text"`
 	CreatedAt   time.Time      `json:"created_at"`

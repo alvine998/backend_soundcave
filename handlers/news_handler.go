@@ -19,6 +19,7 @@ type CreateNewsRequest struct {
 	ImageURL    *string `json:"image_url"`
 	PublishedAt *string `json:"published_at"` // Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"
 	IsPublished *bool   `json:"is_published"`
+	IsHeadline  *bool   `json:"is_headline"`
 	Tags        *string `json:"tags"`
 }
 
@@ -32,6 +33,7 @@ type UpdateNewsRequest struct {
 	ImageURL    *string `json:"image_url"`
 	PublishedAt *string `json:"published_at"` // Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"
 	IsPublished *bool   `json:"is_published"`
+	IsHeadline  *bool   `json:"is_headline"`
 	Tags        *string `json:"tags"`
 }
 
@@ -88,9 +90,13 @@ func CreateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	// Set default values
 	isPublished := false
+	isHeadline := false
 	views := 0
 	if req.IsPublished != nil {
 		isPublished = *req.IsPublished
+	}
+	if req.IsHeadline != nil {
+		isHeadline = *req.IsHeadline
 	}
 
 	// Buat news baru
@@ -103,6 +109,7 @@ func CreateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		ImageURL:    req.ImageURL,
 		PublishedAt: publishedAt,
 		IsPublished: &isPublished,
+		IsHeadline:  &isHeadline,
 		Views:       &views,
 		Tags:        req.Tags,
 	}
@@ -332,6 +339,10 @@ func UpdateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.IsPublished != nil {
 		news.IsPublished = req.IsPublished
+	}
+
+	if req.IsHeadline != nil {
+		news.IsHeadline = req.IsHeadline
 	}
 
 	if req.Tags != nil {

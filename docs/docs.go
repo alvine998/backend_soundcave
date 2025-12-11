@@ -4421,6 +4421,9 @@ const docTemplate = `{
                 "image_url": {
                     "type": "string"
                 },
+                "is_headline": {
+                    "type": "boolean"
+                },
                 "is_published": {
                     "type": "boolean"
                 },
@@ -4937,6 +4940,9 @@ const docTemplate = `{
                 },
                 "image_url": {
                     "type": "string"
+                },
+                "is_headline": {
+                    "type": "boolean"
                 },
                 "is_published": {
                     "type": "boolean"

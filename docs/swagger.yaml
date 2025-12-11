@@ -205,6 +205,8 @@ definitions:
         type: string
       image_url:
         type: string
+      is_headline:
+        type: boolean
       is_published:
         type: boolean
       published_at:
@@ -566,6 +568,8 @@ definitions:
         type: string
       image_url:
         type: string
+      is_headline:
+        type: boolean
       is_published:
         type: boolean
       published_at:
