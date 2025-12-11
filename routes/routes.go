@@ -6,6 +6,7 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/gofiber/fiber/v2"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 	"gorm.io/gorm"
 )
 
@@ -19,6 +20,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 			"version": "1.0.0",
 		})
 	})
+
+	// Swagger documentation
+	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
 	// API routes
 	api := app.Group("/api")

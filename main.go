@@ -6,6 +6,7 @@ import (
 
 	"backend_soundcave/config"
 	"backend_soundcave/database"
+	_ "backend_soundcave/docs" // Swagger docs
 	"backend_soundcave/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,6 +15,25 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 )
+
+// @title           SoundCave Backend API
+// @version         1.0
+// @description     API documentation for SoundCave Backend - Music streaming platform
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.email  support@soundcave.com
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:6002
+// @BasePath  /api
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token. Example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
 func main() {
 	// Load environment variables

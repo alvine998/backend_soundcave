@@ -32,6 +32,17 @@ type GoogleAuthRequest struct {
 }
 
 // RegisterHandler menangani registrasi user baru
+// @Summary      Register new user
+// @Description  Register a new user account with role "user"
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      RegisterRequest  true  "Register Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      409      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /auth/register [post]
 func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req RegisterRequest
 
@@ -124,6 +135,17 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // LoginHandler menangani login user
+// @Summary      User login
+// @Description  Login with email and password to get JWT token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      LoginRequest  true  "Login Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /auth/login [post]
 func LoginHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req LoginRequest
 
@@ -290,6 +312,17 @@ func GoogleAuthHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetProfileHandler mendapatkan profile user yang sedang login
+// @Summary      Get user profile
+// @Description  Get current authenticated user profile
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /profile [get]
 func GetProfileHandler(c *fiber.Ctx, db *gorm.DB) error {
 	userID, ok := c.Locals("user_id").(uint)
 	if !ok {
