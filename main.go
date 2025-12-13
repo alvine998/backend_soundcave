@@ -82,7 +82,7 @@ func main() {
 	// Initialize Fiber app
 	app := fiber.New(fiber.Config{
 		AppName:   "SoundCave Backend",
-		BodyLimit: 200 * 1024 * 1024, // 200MB untuk support upload podcast video
+		BodyLimit: 300 * 1024 * 1024, // 300MB untuk support upload audio (50MB), music video (150MB), dan podcast video (200MB) dengan safety margin
 	})
 
 	// Middleware
