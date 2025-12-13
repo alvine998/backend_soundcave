@@ -2144,7 +2144,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: Upload a music file to Firebase Storage (max 5MB)
+      description: Upload a music file to Firebase Storage (max 50MB)
       parameters:
       - description: Music file (MP3, WAV, OGG, M4A, AAC, FLAC)
         in: formData

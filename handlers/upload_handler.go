@@ -431,7 +431,7 @@ func DeleteImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 // UploadMusicHandler menangani upload file music ke Firebase Storage
 // @Summary      Upload music file
-// @Description  Upload a music file to Firebase Storage (max 5MB)
+// @Description  Upload a music file to Firebase Storage (max 50MB)
 // @Tags         Musics
 // @Accept       multipart/form-data
 // @Produce      json
@@ -458,12 +458,12 @@ func UploadMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 		folder = "musics"
 	}
 
-	// Validasi file size (max 5MB)
-	maxSize := int64(5 * 1024 * 1024) // 5MB
+	// Validasi file size (max 50MB untuk audio berkualitas tinggi)
+	maxSize := int64(50 * 1024 * 1024) // 50MB
 	if file.Size > maxSize {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
-			"message": "Ukuran file terlalu besar. Maksimal 5MB",
+			"message": "Ukuran file terlalu besar. Maksimal 50MB",
 		})
 	}
 

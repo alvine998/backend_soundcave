@@ -1886,7 +1886,7 @@ const docTemplate = `{
         },
         "/musics/upload": {
             "post": {
-                "description": "Upload a music file to Firebase Storage (max 5MB)",
+                "description": "Upload a music file to Firebase Storage (max 50MB)",
                 "consumes": [
                     "multipart/form-data"
                 ],
