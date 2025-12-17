@@ -934,3 +934,171 @@ func UploadPodcastVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		},
 	})
 }
+
+// UploadCavelistVideoHandler menangani upload file cavelist video ke Firebase Storage
+// @Summary      Upload cavelist video file
+// @Description  Upload a cavelist video file to Firebase Storage (max 150MB)
+// @Tags         Cavelists
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file    formData  file    true   "Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)"
+// @Param        folder  formData  string  false  "Folder path (default: cavelist-videos)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /cavelists/upload [post]
+func UploadCavelistVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
+	// Parse multipart form
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "File cavelist video tidak ditemukan",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get folder dari form-data, default ke "cavelist-videos" jika tidak ada
+	folder := c.FormValue("folder")
+	if folder == "" {
+		folder = "cavelist-videos"
+	}
+
+	// Validasi file size (max 150MB)
+	maxSize := int64(150 * 1024 * 1024) // 150MB
+	if file.Size > maxSize {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Ukuran file terlalu besar. Maksimal 150MB",
+		})
+	}
+
+	// Validasi file type untuk video
+	allowedTypes := map[string]bool{
+		"video/mp4":        true, // MP4
+		"video/x-m4v":      true, // M4V
+		"video/quicktime":  true, // MOV
+		"video/x-msvideo":  true, // AVI
+		"video/x-ms-wmv":   true, // WMV
+		"video/webm":       true, // WebM
+		"video/ogg":        true, // OGG
+		"video/x-matroska": true, // MKV
+		"video/3gpp":       true, // 3GP
+		"video/3gpp2":      true, // 3G2
+	}
+
+	contentType := file.Header.Get("Content-Type")
+	if !allowedTypes[contentType] {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Tipe file tidak diizinkan. Hanya file video (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)",
+		})
+	}
+
+	// Buka file
+	src, err := file.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal membuka file",
+			"error":   err.Error(),
+		})
+	}
+	defer src.Close()
+
+	// Generate unique filename
+	ext := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+	bucketPath := fmt.Sprintf("%s/%s", folder, filename)
+
+	// Upload ke Firebase Storage
+	ctx := context.Background()
+	bucket, err := config.GetStorageBucket()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengakses Firebase Storage",
+			"error":   err.Error(),
+		})
+	}
+
+	if bucket == nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Firebase Storage bucket tidak tersedia",
+		})
+	}
+
+	// Buat object writer
+	obj := bucket.Object(bucketPath)
+	writer := obj.NewWriter(ctx)
+	writer.ContentType = contentType
+	writer.CacheControl = "public, max-age=31536000"
+
+	// Copy file ke Firebase Storage
+	if _, err := io.Copy(writer, src); err != nil {
+		writer.Close()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal upload file ke Firebase Storage",
+			"error":   err.Error(),
+		})
+	}
+
+	// Close writer
+	if err := writer.Close(); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menutup writer",
+			"error":   err.Error(),
+		})
+	}
+
+	// Set public access
+	if err := obj.ACL().Set(ctx, "allUsers", "READER"); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal set public access",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get public URL
+	bucketName := os.Getenv("FIREBASE_STORAGE_BUCKET")
+	if bucketName == "" {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "Gagal mendapatkan URL file",
+				"error":   err.Error(),
+			})
+		}
+		bucketName = attrs.Bucket
+	}
+
+	// Generate public URL (encode folder path)
+	pathSegments := strings.Split(folder, "/")
+	encodedSegments := make([]string, len(pathSegments))
+	for i, segment := range pathSegments {
+		encodedSegments[i] = url.PathEscape(segment)
+	}
+	encodedFolder := strings.Join(encodedSegments, "%2F")
+	encodedFilename := url.PathEscape(filename)
+	encodedPath := fmt.Sprintf("%s%%2F%s", encodedFolder, encodedFilename)
+	fileURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+		bucketName,
+		encodedPath)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "File cavelist video berhasil diupload",
+		"data": fiber.Map{
+			"file_name":    file.Filename,
+			"file_url":     fileURL,
+			"file_size":    file.Size,
+			"content_type": contentType,
+			"bucket_path":  bucketPath,
+		},
+	})
+}

@@ -332,4 +332,31 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	news.Delete("/:id", func(c *fiber.Ctx) error {
 		return handlers.DeleteNewsHandler(c, db)
 	})
+
+	// Cavelist CRUD routes
+	cavelists := api.Group("/cavelists")
+	cavelists.Post("/upload", func(c *fiber.Ctx) error {
+		return handlers.UploadCavelistVideoHandler(c, db)
+	})
+	cavelists.Post("/", func(c *fiber.Ctx) error {
+		return handlers.CreateCavelistHandler(c, db)
+	})
+	cavelists.Get("/", func(c *fiber.Ctx) error {
+		return handlers.GetCavelistsHandler(c, db)
+	})
+	cavelists.Get("/:id", func(c *fiber.Ctx) error {
+		return handlers.GetCavelistByIDHandler(c, db)
+	})
+	cavelists.Put("/:id", func(c *fiber.Ctx) error {
+		return handlers.UpdateCavelistHandler(c, db)
+	})
+	cavelists.Delete("/:id", func(c *fiber.Ctx) error {
+		return handlers.DeleteCavelistHandler(c, db)
+	})
+	cavelists.Post("/:id/like", func(c *fiber.Ctx) error {
+		return handlers.IncrementCavelistLikesHandler(c, db)
+	})
+	cavelists.Post("/:id/share", func(c *fiber.Ctx) error {
+		return handlers.IncrementCavelistSharesHandler(c, db)
+	})
 }
