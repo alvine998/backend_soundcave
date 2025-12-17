@@ -70,6 +70,7 @@ func Connect() (*gorm.DB, error) {
 		&models.Podcast{},
 		&models.SubscriptionPlan{},
 		&models.News{},
+		&models.Cavelist{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("gagal migrate database: %w", err)
