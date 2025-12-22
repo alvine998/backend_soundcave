@@ -360,3 +360,42 @@ func DeleteArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Artist berhasil dihapus",
 	})
 }
+
+// GetRandomArtistsHandler mendapatkan list random artists
+// @Summary      Get random artists
+// @Description  Get a list of random artists
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        limit    query     int     false  "Number of artists to return" default(10)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /artists/random [get]
+func GetRandomArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
+	var artists []models.Artist
+
+	// Get limit dari query parameter, default 10
+	limit := c.QueryInt("limit", 10)
+	if limit <= 0 {
+		limit = 10
+	}
+	if limit > 100 {
+		limit = 100 // Max limit untuk menghindari query yang terlalu besar
+	}
+
+	// Query random artists menggunakan ORDER BY RAND()
+	// Untuk MySQL/MariaDB, RAND() akan menghasilkan random order
+	if err := db.Order("RAND()").Limit(limit).Find(&artists).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data random artists",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"data":    artists,
+		"count":   len(artists),
+	})
+}

@@ -128,6 +128,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	artists.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateArtistHandler(c, db)
 	})
+	artists.Get("/random", func(c *fiber.Ctx) error {
+		return handlers.GetRandomArtistsHandler(c, db)
+	})
 	artists.Get("/", func(c *fiber.Ctx) error {
 		return handlers.GetArtistsHandler(c, db)
 	})
