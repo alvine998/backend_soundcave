@@ -122,6 +122,23 @@ func CreateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetSubscriptionPlansHandler mendapatkan semua subscription_plans dengan pagination
+// @Summary      Get all subscription plans
+// @Description  Get paginated list of subscription plans with filtering and search
+// @Tags         SubscriptionPlans
+// @Accept       json
+// @Produce      json
+// @Param        page           query     int     false  "Page number" default(1)
+// @Param        limit          query     int     false  "Items per page" default(10)
+// @Param        audio_quality  query     string  false  "Filter by audio quality"
+// @Param        ads_enabled    query     bool    false  "Filter by ads enabled"
+// @Param        offline_mode   query     bool    false  "Filter by offline mode"
+// @Param        is_popular     query     bool    false  "Filter by is popular"
+// @Param        search         query     string  false  "Search by name or description"
+// @Param        sort_by        query     string  false  "Sort field" default(created_at)
+// @Param        order          query     string  false  "Sort order" default(desc)
+// @Success      200            {object}  map[string]interface{}
+// @Failure      500            {object}  map[string]interface{}
+// @Router       /subscription-plans [get]
 func GetSubscriptionPlansHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var subscriptionPlans []models.SubscriptionPlan
 

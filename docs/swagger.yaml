@@ -103,6 +103,35 @@ definitions:
     - email
     - name
     type: object
+  handlers.CreateCavelistRequest:
+    properties:
+      artist_id:
+        type: integer
+      artist_name:
+        type: string
+      description:
+        type: string
+      expiry_promotion:
+        description: 'Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"'
+        type: string
+      is_promotion:
+        type: boolean
+      published_at:
+        description: 'Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"'
+        type: string
+      status:
+        description: '"draft" atau "publish"'
+        type: string
+      title:
+        type: string
+      video_url:
+        type: string
+    required:
+    - artist_id
+    - artist_name
+    - title
+    - video_url
+    type: object
   handlers.CreateGenreRequest:
     properties:
       color:
@@ -484,6 +513,30 @@ definitions:
         additionalProperties: true
         type: object
       website:
+        type: string
+    type: object
+  handlers.UpdateCavelistRequest:
+    properties:
+      artist_id:
+        type: integer
+      artist_name:
+        type: string
+      description:
+        type: string
+      expiry_promotion:
+        description: 'Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"'
+        type: string
+      is_promotion:
+        type: boolean
+      published_at:
+        description: 'Format: "2006-01-02 15:04:05" atau "2006-01-02T15:04:05Z"'
+        type: string
+      status:
+        description: '"draft" atau "publish"'
+        type: string
+      title:
+        type: string
+      video_url:
         type: string
     type: object
   handlers.UpdateGenreRequest:
@@ -891,6 +944,51 @@ paths:
       tags:
       - Albums
   /app-info:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of app information entries
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Search by app name or tagline
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all app info
+      tags:
+      - AppInfo
     post:
       consumes:
       - application/json
@@ -1237,6 +1335,33 @@ paths:
       summary: Update artist
       tags:
       - Artists
+  /artists/random:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of random artists
+      parameters:
+      - default: 10
+        description: Number of artists to return
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get random artists
+      tags:
+      - Artists
   /auth/google:
     post:
       consumes:
@@ -1351,6 +1476,301 @@ paths:
       summary: Register new user
       tags:
       - Auth
+  /cavelists:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of cavelists with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by artist_id
+        in: query
+        name: artist_id
+        type: integer
+      - description: Filter by status (draft/publish)
+        in: query
+        name: status
+        type: string
+      - description: Filter by is_promotion
+        in: query
+        name: is_promotion
+        type: boolean
+      - description: Search by title or description
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all cavelists
+      tags:
+      - Cavelists
+    post:
+      consumes:
+      - application/json
+      description: Create a new cavelist
+      parameters:
+      - description: Cavelist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateCavelistRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new cavelist
+      tags:
+      - Cavelists
+  /cavelists/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft delete a cavelist by ID
+      parameters:
+      - description: Cavelist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete cavelist
+      tags:
+      - Cavelists
+    get:
+      consumes:
+      - application/json
+      description: Get a single cavelist by ID
+      parameters:
+      - description: Cavelist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get cavelist by ID
+      tags:
+      - Cavelists
+    put:
+      consumes:
+      - application/json
+      description: Update cavelist information
+      parameters:
+      - description: Cavelist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Cavelist Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateCavelistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update cavelist
+      tags:
+      - Cavelists
+  /cavelists/{id}/like:
+    post:
+      consumes:
+      - application/json
+      description: Increment likes count for a cavelist
+      parameters:
+      - description: Cavelist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Increment cavelist likes
+      tags:
+      - Cavelists
+  /cavelists/{id}/share:
+    post:
+      consumes:
+      - application/json
+      description: Increment shares count for a cavelist
+      parameters:
+      - description: Cavelist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Increment cavelist shares
+      tags:
+      - Cavelists
+  /cavelists/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a cavelist video file to Firebase Storage (max 150MB)
+      parameters:
+      - description: Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 'Folder path (default: cavelist-videos)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload cavelist video file
+      tags:
+      - Cavelists
   /dashboard/customer-report:
     get:
       consumes:
@@ -1650,6 +2070,42 @@ paths:
       summary: Delete image
       tags:
       - Images
+  /images/multiple:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload multiple image files to Firebase Storage
+      parameters:
+      - description: Image files
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: 'Folder path (default: images)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload multiple images
+      tags:
+      - Images
   /images/upload:
     post:
       consumes:
@@ -1687,6 +2143,59 @@ paths:
       tags:
       - Images
   /music-videos:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of music videos with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by artist ID
+        in: query
+        name: artist_id
+        type: integer
+      - description: Filter by genre
+        in: query
+        name: genre
+        type: string
+      - description: Search by title or artist
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all music videos
+      tags:
+      - MusicVideos
     post:
       consumes:
       - application/json
@@ -2298,6 +2807,37 @@ paths:
       summary: Delete news
       tags:
       - News
+    get:
+      consumes:
+      - application/json
+      description: Get a single news article by ID
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get news by ID
+      tags:
+      - News
     put:
       consumes:
       - application/json
@@ -2557,6 +3097,88 @@ paths:
             additionalProperties: true
             type: object
       summary: Mark notification as read
+      tags:
+      - Notifications
+  /notifications/user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of notifications for a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by read status
+        in: query
+        name: is_read
+        type: boolean
+      - description: Filter by type
+        in: query
+        name: type
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get user notifications
+      tags:
+      - Notifications
+  /notifications/user/{user_id}/read-all:
+    post:
+      consumes:
+      - application/json
+      description: Mark all notifications for a specific user as read
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Mark all notifications as read
       tags:
       - Notifications
   /playlist-songs:
@@ -3203,6 +3825,67 @@ paths:
       tags:
       - Auth
   /subscription-plans:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of subscription plans with filtering and search
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by audio quality
+        in: query
+        name: audio_quality
+        type: string
+      - description: Filter by ads enabled
+        in: query
+        name: ads_enabled
+        type: boolean
+      - description: Filter by offline mode
+        in: query
+        name: offline_mode
+        type: boolean
+      - description: Filter by is popular
+        in: query
+        name: is_popular
+        type: boolean
+      - description: Search by name or description
+        in: query
+        name: search
+        type: string
+      - default: created_at
+        description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - default: desc
+        description: Sort order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all subscription plans
+      tags:
+      - SubscriptionPlans
     post:
       consumes:
       - application/json

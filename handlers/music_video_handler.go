@@ -95,6 +95,21 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetMusicVideosHandler mendapatkan semua music_videos dengan pagination
+// @Summary      Get all music videos
+// @Description  Get paginated list of music videos with filtering and search
+// @Tags         MusicVideos
+// @Accept       json
+// @Produce      json
+// @Param        page       query     int     false  "Page number" default(1)
+// @Param        limit      query     int     false  "Items per page" default(10)
+// @Param        artist_id  query     int     false  "Filter by artist ID"
+// @Param        genre      query     string  false  "Filter by genre"
+// @Param        search     query     string  false  "Search by title or artist"
+// @Param        sort_by    query     string  false  "Sort field" default(created_at)
+// @Param        order      query     string  false  "Sort order" default(desc)
+// @Success      200        {object}  map[string]interface{}
+// @Failure      500        {object}  map[string]interface{}
+// @Router       /music-videos [get]
 func GetMusicVideosHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var musicVideos []models.MusicVideo
 

@@ -214,6 +214,16 @@ func GetNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetNewsByIDHandler mendapatkan news by ID
+// @Summary      Get news by ID
+// @Description  Get a single news article by ID
+// @Tags         News
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "News ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /news/{id} [get]
 func GetNewsByIDHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
 

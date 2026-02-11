@@ -193,6 +193,17 @@ func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // UploadMultipleImagesHandler menangani upload multiple gambar
+// @Summary      Upload multiple images
+// @Description  Upload multiple image files to Firebase Storage
+// @Tags         Images
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        file    formData  file    true   "Image files"
+// @Param        folder  formData  string  false  "Folder path (default: images)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Failure      500     {object}  map[string]interface{}
+// @Router       /images/multiple [post]
 func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 	form, err := c.MultipartForm()
 	if err != nil {

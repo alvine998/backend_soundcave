@@ -137,6 +137,19 @@ func CreateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetAppInfosHandler mendapatkan semua app_info dengan pagination
+// @Summary      Get all app info
+// @Description  Get paginated list of app information entries
+// @Tags         AppInfo
+// @Accept       json
+// @Produce      json
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        search   query     string  false  "Search by app name or tagline"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /app-info [get]
 func GetAppInfosHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var appInfos []models.AppInfo
 

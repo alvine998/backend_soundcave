@@ -230,6 +230,21 @@ func GetNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // GetUserNotificationsHandler mendapatkan notifications by user_id
+// @Summary      Get user notifications
+// @Description  Get paginated list of notifications for a specific user
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        user_id  path      int     true  "User ID"
+// @Param        page     query     int     false  "Page number" default(1)
+// @Param        limit    query     int     false  "Items per page" default(10)
+// @Param        is_read  query     bool    false  "Filter by read status"
+// @Param        type     query     string  false  "Filter by type"
+// @Param        sort_by  query     string  false  "Sort field" default(created_at)
+// @Param        order    query     string  false  "Sort order" default(desc)
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /notifications/user/{user_id} [get]
 func GetUserNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	userID := c.Params("user_id")
 
@@ -439,6 +454,15 @@ func MarkAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // MarkAllAsReadHandler menandai semua notifications user sebagai sudah dibaca
+// @Summary      Mark all notifications as read
+// @Description  Mark all notifications for a specific user as read
+// @Tags         Notifications
+// @Accept       json
+// @Produce      json
+// @Param        user_id  path      int  true  "User ID"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /notifications/user/{user_id}/read-all [post]
 func MarkAllAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 	userID := c.Params("user_id")
 
