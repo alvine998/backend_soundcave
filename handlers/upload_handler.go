@@ -786,7 +786,7 @@ func UploadMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        file    formData  file    true   "Video file (MP4, MOV, AVI, WMV, WebM, MKV, 3GP)"
 // @Param        folder  formData  string  false  "Folder path (default: podcast-videos)"
-// @Success      200     {object}  map[string]interface{}
+// @Success      200     {object}  map[string]interface{} "Returns the uploaded file details"
 // @Failure      400     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
 // @Router       /podcasts/upload [post]
@@ -1103,7 +1103,7 @@ func UploadCavelistVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
-		"message": "File cavelist video berhasil diupload",
+		"message": "File podcast video berhasil diupload",
 		"data": fiber.Map{
 			"file_name":    file.Filename,
 			"file_url":     fileURL,

@@ -111,7 +111,7 @@ func CreatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        search   query     string  false  "Search by title, host, or description"
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
-// @Success      200      {object}  map[string]interface{}
+// @Success      200      {object}  map[string]interface{} "Returns a list of podcasts with pagination"
 // @Failure      500      {object}  map[string]interface{}
 // @Router       /podcasts [get]
 func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
@@ -185,7 +185,7 @@ func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Podcast ID"
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  models.Podcast
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
 // @Router       /podcasts/{id} [get]
@@ -221,7 +221,7 @@ func GetPodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id       path      int                 true  "Podcast ID"
 // @Param        request  body      UpdatePodcastRequest  true  "Update Podcast Request"
-// @Success      200      {object}  map[string]interface{}
+// @Success      200      {object}  models.Podcast
 // @Failure      400      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
