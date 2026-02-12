@@ -29,7 +29,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: "1.21"
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -55,11 +55,11 @@ jobs:
   deploy:
     name: Deploy to Server
     runs-on: ubuntu-latest
-    needs: test    
+    needs: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -69,27 +69,5 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             cd /var/www/backend_soundcave
-            
-            # Backup existing .env if exists
-            if [ -f .env ]; then
-              cp .env .env.backup
-              echo "Backed up .env file"
-            fi
-            
-            # Ensure firebase-service-account.json exists (should be on server)
-            if [ ! -f firebase-service-account.json ]; then
-              echo "Warning: firebase-service-account.json not found!"
-            fi
-            
-            # Stop existing containers
-            echo "Stopping existing containers..."
-            docker-compose down || true
-            
-            # Build and start containers
-            echo "Building containers..."
-            docker-compose build --no-cache backend
-            
-            echo "Starting containers..."
-            docker-compose up -d
-            
+            ./deploy.sh
             echo "Deployment completed successfully!"
