@@ -10,10 +10,10 @@ import (
 type AlbumType string
 
 const (
-	AlbumTypeSingle       AlbumType = "single"
-	AlbumTypeEP           AlbumType = "EP"
-	AlbumTypeAlbum        AlbumType = "album"
-	AlbumTypeCompilation  AlbumType = "compilation"
+	AlbumTypeSingle      AlbumType = "single"
+	AlbumTypeEP          AlbumType = "EP"
+	AlbumTypeAlbum       AlbumType = "album"
+	AlbumTypeCompilation AlbumType = "compilation"
 )
 
 // Album model sesuai struktur tabel
@@ -27,6 +27,7 @@ type Album struct {
 	Genre       string         `json:"genre" gorm:"size:100"`
 	TotalTracks int            `json:"total_tracks" gorm:"not null;default:0"`
 	RecordLabel *string        `json:"record_label" gorm:"size:255"`
+	Image       *string        `json:"image" gorm:"size:255"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
@@ -36,4 +37,3 @@ type Album struct {
 func (Album) TableName() string {
 	return "albums"
 }
-

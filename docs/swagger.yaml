@@ -23,6 +23,8 @@ definitions:
         type: integer
       genre:
         type: string
+      image:
+        type: string
       record_label:
         type: string
       release_date:
@@ -452,6 +454,8 @@ definitions:
       artist_id:
         type: integer
       genre:
+        type: string
+      image:
         type: string
       record_label:
         type: string

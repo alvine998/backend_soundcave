@@ -6186,6 +6186,9 @@ const docTemplate = `{
                 "genre": {
                     "type": "string"
                 },
+                "image": {
+                    "type": "string"
+                },
                 "record_label": {
                     "type": "string"
                 },
@@ -6788,6 +6791,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "genre": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 },
                 "record_label": {

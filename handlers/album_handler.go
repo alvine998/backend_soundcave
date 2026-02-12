@@ -18,6 +18,7 @@ type CreateAlbumRequest struct {
 	Genre       string  `json:"genre"`
 	TotalTracks int     `json:"total_tracks" validate:"min=0"`
 	RecordLabel *string `json:"record_label"`
+	Image       *string `json:"image"`
 }
 
 // UpdateAlbumRequest struct untuk request update album
@@ -30,6 +31,7 @@ type UpdateAlbumRequest struct {
 	Genre       *string `json:"genre"`
 	TotalTracks *int    `json:"total_tracks" validate:"omitempty,min=0"`
 	RecordLabel *string `json:"record_label"`
+	Image       *string `json:"image"`
 }
 
 // CreateAlbumHandler membuat album baru
@@ -94,6 +96,7 @@ func CreateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Genre:       req.Genre,
 		TotalTracks: req.TotalTracks,
 		RecordLabel: req.RecordLabel,
+		Image:       req.Image,
 	}
 
 	if err := db.Create(&album).Error; err != nil {
@@ -324,6 +327,10 @@ func UpdateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.RecordLabel != nil {
 		album.RecordLabel = req.RecordLabel
+	}
+
+	if req.Image != nil {
+		album.Image = req.Image
 	}
 
 	if err := db.Save(&album).Error; err != nil {
