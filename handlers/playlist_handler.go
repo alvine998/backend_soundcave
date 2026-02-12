@@ -33,7 +33,9 @@ type UpdatePlaylistRequest struct {
 // @Param        request  body      CreatePlaylistRequest  true  "Playlist Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /playlists [post]
 func CreatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreatePlaylistRequest
@@ -86,7 +88,9 @@ func CreatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        user_id  query     int     false  "Filter by user ID"
 // @Param        search   query     string  false  "Search by name"
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /playlists [get]
 func GetPlaylistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var playlists []models.Playlist
@@ -153,8 +157,10 @@ func GetPlaylistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Playlist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /playlists/{id} [get]
 func GetPlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -190,8 +196,10 @@ func GetPlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdatePlaylistRequest  true  "Update Playlist Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /playlists/{id} [put]
 func UpdatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -260,8 +268,10 @@ func UpdatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Playlist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /playlists/{id} [delete]
 func DeletePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

@@ -60,7 +60,9 @@ type UpdateMusicRequest struct {
 // @Param        request  body      CreateMusicRequest  true  "Music Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics [post]
 func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateMusicRequest
@@ -149,7 +151,9 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by     query     string  false  "Sort field" default(created_at)
 // @Param        order       query     string  false  "Sort order" default(desc)
 // @Success      200         {object}  map[string]interface{}
+// @Failure      401         {object}  map[string]interface{}
 // @Failure      500         {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics [get]
 func GetMusicsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var musics []models.Music
@@ -236,8 +240,10 @@ func GetMusicsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Music ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/{id} [get]
 func GetMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -273,8 +279,10 @@ func GetMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateMusicRequest  true  "Update Music Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/{id} [put]
 func UpdateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -403,8 +411,10 @@ func UpdateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Music ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/{id} [delete]
 func DeleteMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -446,8 +456,10 @@ func DeleteMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Music ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/{id}/play [post]
 func IncrementPlayCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -498,8 +510,10 @@ func IncrementPlayCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Music ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/{id}/like [post]
 func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -549,7 +563,9 @@ func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/top-streamed [get]
 func GetTop5MostStreamedHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var musics []models.Music

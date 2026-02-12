@@ -45,7 +45,9 @@ type UpdatePodcastRequest struct {
 // @Param        request  body      CreatePodcastRequest  true  "Podcast Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /podcasts [post]
 func CreatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreatePodcastRequest
@@ -112,7 +114,9 @@ func CreatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{} "Returns a list of podcasts with pagination"
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /podcasts [get]
 func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var podcasts []models.Podcast
@@ -186,8 +190,10 @@ func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Podcast ID"
 // @Success      200  {object}  models.Podcast
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /podcasts/{id} [get]
 func GetPodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -223,8 +229,10 @@ func GetPodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdatePodcastRequest  true  "Update Podcast Request"
 // @Success      200      {object}  models.Podcast
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /podcasts/{id} [put]
 func UpdatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -325,8 +333,10 @@ func UpdatePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Podcast ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /podcasts/{id} [delete]
 func DeletePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

@@ -43,7 +43,9 @@ type UpdateMusicVideoRequest struct {
 // @Param        request  body      CreateMusicVideoRequest  true  "Music Video Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /music-videos [post]
 func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateMusicVideoRequest
@@ -108,7 +110,9 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by    query     string  false  "Sort field" default(created_at)
 // @Param        order      query     string  false  "Sort order" default(desc)
 // @Success      200        {object}  map[string]interface{}
+// @Failure      401        {object}  map[string]interface{}
 // @Failure      500        {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /music-videos [get]
 func GetMusicVideosHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var musicVideos []models.MusicVideo
@@ -177,8 +181,10 @@ func GetMusicVideosHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Music Video ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /music-videos/{id} [get]
 func GetMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -214,8 +220,10 @@ func GetMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateMusicVideoRequest  true  "Update Music Video Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /music-videos/{id} [put]
 func UpdateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -312,8 +320,10 @@ func UpdateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Music Video ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /music-videos/{id} [delete]
 func DeleteMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

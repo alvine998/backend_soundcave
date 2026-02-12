@@ -47,7 +47,9 @@ type UpdateSubscriptionPlanRequest struct {
 // @Param        request  body      CreateSubscriptionPlanRequest  true  "Subscription Plan Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /subscription-plans [post]
 func CreateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateSubscriptionPlanRequest
@@ -137,7 +139,9 @@ func CreateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by        query     string  false  "Sort field" default(created_at)
 // @Param        order          query     string  false  "Sort order" default(desc)
 // @Success      200            {object}  map[string]interface{}
+// @Failure      401            {object}  map[string]interface{}
 // @Failure      500            {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /subscription-plans [get]
 func GetSubscriptionPlansHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var subscriptionPlans []models.SubscriptionPlan
@@ -225,8 +229,10 @@ func GetSubscriptionPlansHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Subscription Plan ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /subscription-plans/{id} [get]
 func GetSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -262,8 +268,10 @@ func GetSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateSubscriptionPlanRequest  true  "Update Subscription Plan Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /subscription-plans/{id} [put]
 func UpdateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -360,8 +368,10 @@ func UpdateSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Subscription Plan ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /subscription-plans/{id} [delete]
 func DeleteSubscriptionPlanHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

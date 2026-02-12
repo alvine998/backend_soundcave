@@ -27,7 +27,9 @@ import (
 // @Param        folder  formData  string  false  "Folder path (default: images)"
 // @Success      200     {object}  map[string]interface{}
 // @Failure      400     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /images/upload [post]
 func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
@@ -202,7 +204,9 @@ func UploadImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        folder  formData  string  false  "Folder path (default: images)"
 // @Success      200     {object}  map[string]interface{}
 // @Failure      400     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /images/multiple [post]
 func UploadMultipleImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 	form, err := c.MultipartForm()
@@ -400,8 +404,10 @@ func GetImagesHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Image ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /images/{id} [delete]
 func DeleteImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -450,7 +456,9 @@ func DeleteImageHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        folder  formData  string  false  "Folder path (default: musics)"
 // @Success      200     {object}  map[string]interface{}
 // @Failure      400     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /musics/upload [post]
 func UploadMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
@@ -620,7 +628,9 @@ func UploadMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        folder  formData  string  false  "Folder path (default: music-videos)"
 // @Success      200     {object}  map[string]interface{}
 // @Failure      400     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /music-videos/upload [post]
 func UploadMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
@@ -788,7 +798,9 @@ func UploadMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        folder  formData  string  false  "Folder path (default: podcast-videos)"
 // @Success      200     {object}  map[string]interface{} "Returns the uploaded file details"
 // @Failure      400     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /podcasts/upload [post]
 func UploadPodcastVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form
@@ -956,7 +968,9 @@ func UploadPodcastVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        folder  formData  string  false  "Folder path (default: cavelist-videos)"
 // @Success      200     {object}  map[string]interface{}
 // @Failure      400     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists/upload [post]
 func UploadCavelistVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Parse multipart form

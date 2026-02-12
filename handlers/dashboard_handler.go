@@ -15,6 +15,7 @@ import (
 // @Produce      json
 // @Security     BearerAuth
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
 // @Router       /dashboard/stats [get]
 func GetDashboardStatsHandler(c *fiber.Ctx, db *gorm.DB) error {

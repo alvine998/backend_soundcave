@@ -46,7 +46,9 @@ type UpdateNewsRequest struct {
 // @Param        request  body      CreateNewsRequest  true  "News Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /news [post]
 func CreateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateNewsRequest
@@ -144,7 +146,9 @@ func CreateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by      query     string  false  "Sort field" default(created_at)
 // @Param        order        query     string  false  "Sort order" default(desc)
 // @Success      200          {object}  map[string]interface{}
+// @Failure      401          {object}  map[string]interface{}
 // @Failure      500          {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /news [get]
 func GetNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var news []models.News
@@ -221,8 +225,10 @@ func GetNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "News ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /news/{id} [get]
 func GetNewsByIDHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -267,8 +273,10 @@ func GetNewsByIDHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateNewsRequest  true  "Update News Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /news/{id} [put]
 func UpdateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -382,8 +390,10 @@ func UpdateNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "News ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /news/{id} [delete]
 func DeleteNewsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

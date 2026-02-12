@@ -51,23 +51,23 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.GetCustomerReportHandler(c, db)
 	})
 
-	// Image upload routes
+	// Image upload routes (Public for viewing, but maybe should be protected? Keeping as is for now unless asked)
 	images := api.Group("/images")
-	images.Post("/upload", func(c *fiber.Ctx) error {
+	images.Post("/upload", middleware.AuthMiddleware, func(c *fiber.Ctx) error {
 		return handlers.UploadImageHandler(c, db)
 	})
-	images.Post("/upload-multiple", func(c *fiber.Ctx) error {
+	images.Post("/upload-multiple", middleware.AuthMiddleware, func(c *fiber.Ctx) error {
 		return handlers.UploadMultipleImagesHandler(c, db)
 	})
 	images.Get("/", func(c *fiber.Ctx) error {
 		return handlers.GetImagesHandler(c, db)
 	})
-	images.Delete("/:id", func(c *fiber.Ctx) error {
+	images.Delete("/:id", middleware.AuthMiddleware, func(c *fiber.Ctx) error {
 		return handlers.DeleteImageHandler(c, db)
 	})
 
-	// User CRUD routes
-	users := api.Group("/users")
+	// User CRUD routes (Protected)
+	users := api.Group("/users", middleware.AuthMiddleware)
 	users.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateUserHandler(c, db)
 	})
@@ -84,8 +84,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteUserHandler(c, db)
 	})
 
-	// Album CRUD routes
-	albums := api.Group("/albums")
+	// Album CRUD routes (Protected)
+	albums := api.Group("/albums", middleware.AuthMiddleware)
 	albums.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateAlbumHandler(c, db)
 	})
@@ -102,8 +102,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteAlbumHandler(c, db)
 	})
 
-	// App Info CRUD routes
-	appInfo := api.Group("/app-info")
+	// App Info CRUD routes (Protected)
+	appInfo := api.Group("/app-info", middleware.AuthMiddleware)
 	appInfo.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateAppInfoHandler(c, db)
 	})
@@ -123,8 +123,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteAppInfoHandler(c, db)
 	})
 
-	// Artist CRUD routes
-	artists := api.Group("/artists")
+	// Artist CRUD routes (Protected)
+	artists := api.Group("/artists", middleware.AuthMiddleware)
 	artists.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateArtistHandler(c, db)
 	})
@@ -144,8 +144,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteArtistHandler(c, db)
 	})
 
-	// Genre CRUD routes
-	genres := api.Group("/genres")
+	// Genre CRUD routes (Protected)
+	genres := api.Group("/genres", middleware.AuthMiddleware)
 	genres.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateGenreHandler(c, db)
 	})
@@ -162,8 +162,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteGenreHandler(c, db)
 	})
 
-	// Music CRUD routes
-	musics := api.Group("/musics")
+	// Music CRUD routes (Protected)
+	musics := api.Group("/musics", middleware.AuthMiddleware)
 	musics.Post("/upload", func(c *fiber.Ctx) error {
 		return handlers.UploadMusicHandler(c, db)
 	})
@@ -192,8 +192,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.IncrementLikeCountHandler(c, db)
 	})
 
-	// Music Video CRUD routes
-	musicVideos := api.Group("/music-videos")
+	// Music Video CRUD routes (Protected)
+	musicVideos := api.Group("/music-videos", middleware.AuthMiddleware)
 	musicVideos.Post("/upload", func(c *fiber.Ctx) error {
 		return handlers.UploadMusicVideoHandler(c, db)
 	})
@@ -213,8 +213,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteMusicVideoHandler(c, db)
 	})
 
-	// Notification CRUD routes
-	notifications := api.Group("/notifications")
+	// Notification CRUD routes (Protected)
+	notifications := api.Group("/notifications", middleware.AuthMiddleware)
 	notifications.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateNotificationHandler(c, db)
 	})
@@ -240,8 +240,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.MarkAllAsReadHandler(c, db)
 	})
 
-	// Playlist CRUD routes
-	playlists := api.Group("/playlists")
+	// Playlist CRUD routes (Protected)
+	playlists := api.Group("/playlists", middleware.AuthMiddleware)
 	playlists.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreatePlaylistHandler(c, db)
 	})
@@ -258,8 +258,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeletePlaylistHandler(c, db)
 	})
 
-	// Playlist Songs CRUD routes
-	playlistSongs := api.Group("/playlist-songs")
+	// Playlist Songs CRUD routes (Protected)
+	playlistSongs := api.Group("/playlist-songs", middleware.AuthMiddleware)
 	playlistSongs.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreatePlaylistSongHandler(c, db)
 	})
@@ -279,8 +279,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeletePlaylistSongByMusicHandler(c, db)
 	})
 
-	// Podcast CRUD routes
-	podcasts := api.Group("/podcasts")
+	// Podcast CRUD routes (Protected)
+	podcasts := api.Group("/podcasts", middleware.AuthMiddleware)
 	podcasts.Post("/upload", func(c *fiber.Ctx) error {
 		return handlers.UploadPodcastVideoHandler(c, db)
 	})
@@ -300,8 +300,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeletePodcastHandler(c, db)
 	})
 
-	// Subscription Plan CRUD routes
-	subscriptionPlans := api.Group("/subscription-plans")
+	// Subscription Plan CRUD routes (Protected)
+	subscriptionPlans := api.Group("/subscription-plans", middleware.AuthMiddleware)
 	subscriptionPlans.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateSubscriptionPlanHandler(c, db)
 	})
@@ -318,8 +318,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteSubscriptionPlanHandler(c, db)
 	})
 
-	// News CRUD routes
-	news := api.Group("/news")
+	// News CRUD routes (Protected)
+	news := api.Group("/news", middleware.AuthMiddleware)
 	news.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateNewsHandler(c, db)
 	})
@@ -336,8 +336,8 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.DeleteNewsHandler(c, db)
 	})
 
-	// Cavelist CRUD routes
-	cavelists := api.Group("/cavelists")
+	// Cavelist CRUD routes (Protected)
+	cavelists := api.Group("/cavelists", middleware.AuthMiddleware)
 	cavelists.Post("/upload", func(c *fiber.Ctx) error {
 		return handlers.UploadCavelistVideoHandler(c, db)
 	})
@@ -362,4 +362,5 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	cavelists.Post("/:id/share", func(c *fiber.Ctx) error {
 		return handlers.IncrementCavelistSharesHandler(c, db)
 	})
+
 }

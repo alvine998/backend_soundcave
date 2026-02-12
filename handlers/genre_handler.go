@@ -40,7 +40,9 @@ func validateHexColor(color string) bool {
 // @Param        request  body      CreateGenreRequest  true  "Genre Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /genres [post]
 func CreateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateGenreRequest
@@ -106,7 +108,9 @@ func CreateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /genres [get]
 func GetGenresHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var genres []models.Genre
@@ -165,8 +169,10 @@ func GetGenresHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Genre ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /genres/{id} [get]
 func GetGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -202,8 +208,10 @@ func GetGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateGenreRequest  true  "Update Genre Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /genres/{id} [put]
 func UpdateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -283,8 +291,10 @@ func UpdateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Genre ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /genres/{id} [delete]
 func DeleteGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

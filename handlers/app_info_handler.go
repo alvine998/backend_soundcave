@@ -51,7 +51,9 @@ type UpdateAppInfoRequest struct {
 // @Param        request  body      CreateAppInfoRequest  true  "App Info Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /app-info [post]
 func CreateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateAppInfoRequest
@@ -148,7 +150,9 @@ func CreateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /app-info [get]
 func GetAppInfosHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var appInfos []models.AppInfo
@@ -207,8 +211,10 @@ func GetAppInfosHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "App Info ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /app-info/{id} [get]
 func GetAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -241,8 +247,10 @@ func GetAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /app-info/latest [get]
 func GetLatestAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var appInfo models.AppInfo
@@ -276,8 +284,10 @@ func GetLatestAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateAppInfoRequest  true  "Update App Info Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /app-info/{id} [put]
 func UpdateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -390,8 +400,10 @@ func UpdateAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "App Info ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /app-info/{id} [delete]
 func DeleteAppInfoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

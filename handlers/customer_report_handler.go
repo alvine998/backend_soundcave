@@ -19,6 +19,7 @@ import (
 // @Security     BearerAuth
 // @Param        period  query     int     false  "Report period in days" default(30)
 // @Success      200     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
 // @Router       /dashboard/customer-report [get]
 func GetCustomerReportHandler(c *fiber.Ctx, db *gorm.DB) error {

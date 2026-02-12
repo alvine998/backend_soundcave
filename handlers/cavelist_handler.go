@@ -63,7 +63,9 @@ func parseDateTime(dateStr string) (*time.Time, error) {
 // @Param        request  body      CreateCavelistRequest  true  "Cavelist Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists [post]
 func CreateCavelistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateCavelistRequest
@@ -167,7 +169,9 @@ func CreateCavelistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by      query     string  false  "Sort field" default(created_at)
 // @Param        order        query     string  false  "Sort order" default(desc)
 // @Success      200          {object}  map[string]interface{}
+// @Failure      401          {object}  map[string]interface{}
 // @Failure      500          {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists [get]
 func GetCavelistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var cavelists []models.Cavelist
@@ -248,8 +252,10 @@ func GetCavelistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Cavelist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists/{id} [get]
 func GetCavelistByIDHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -294,8 +300,10 @@ func GetCavelistByIDHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateCavelistRequest  true  "Update Cavelist Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists/{id} [put]
 func UpdateCavelistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -402,8 +410,10 @@ func UpdateCavelistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Cavelist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists/{id} [delete]
 func DeleteCavelistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -445,8 +455,10 @@ func DeleteCavelistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Cavelist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists/{id}/like [post]
 func IncrementCavelistLikesHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -497,8 +509,10 @@ func IncrementCavelistLikesHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Cavelist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /cavelists/{id}/share [post]
 func IncrementCavelistSharesHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

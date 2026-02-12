@@ -41,7 +41,9 @@ type UpdateAlbumRequest struct {
 // @Param        request  body      CreateAlbumRequest  true  "Album Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /albums [post]
 func CreateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateAlbumRequest
@@ -122,7 +124,9 @@ func CreateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /albums [get]
 func GetAlbumsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var albums []models.Album
@@ -196,8 +200,10 @@ func GetAlbumsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Album ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /albums/{id} [get]
 func GetAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -233,8 +239,10 @@ func GetAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateAlbumRequest  true  "Update Album Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /albums/{id} [put]
 func UpdateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -341,8 +349,10 @@ func UpdateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Album ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /albums/{id} [delete]
 func DeleteAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

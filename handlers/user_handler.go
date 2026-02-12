@@ -41,8 +41,10 @@ type UpdateUserRequest struct {
 // @Param        request  body      CreateUserRequest  true  "User Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      409      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /users [post]
 func CreateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateUserRequest
@@ -131,7 +133,9 @@ func CreateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        role    query     string  false  "Filter by role"
 // @Param        search  query     string  false  "Search by name or email"
 // @Success      200     {object}  map[string]interface{}
+// @Failure      401     {object}  map[string]interface{}
 // @Failure      500     {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /users [get]
 func GetUsersHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var users []models.User
@@ -187,8 +191,10 @@ func GetUsersHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "User ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /users/{id} [get]
 func GetUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -224,8 +230,10 @@ func GetUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateUserRequest  true  "Update User Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /users/{id} [put]
 func UpdateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -339,8 +347,10 @@ func UpdateUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "User ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /users/{id} [delete]
 func DeleteUserHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")

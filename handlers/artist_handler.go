@@ -44,7 +44,9 @@ type UpdateArtistRequest struct {
 // @Param        request  body      CreateArtistRequest  true  "Artist Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /artists [post]
 func CreateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateArtistRequest
@@ -113,7 +115,9 @@ func CreateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /artists [get]
 func GetArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var artists []models.Artist
@@ -187,8 +191,10 @@ func GetArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Artist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /artists/{id} [get]
 func GetArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -224,8 +230,10 @@ func GetArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateArtistRequest  true  "Update Artist Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /artists/{id} [put]
 func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -326,8 +334,10 @@ func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Artist ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /artists/{id} [delete]
 func DeleteArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -369,7 +379,9 @@ func DeleteArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        limit    query     int     false  "Number of artists to return" default(10)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /artists/random [get]
 func GetRandomArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var artists []models.Artist

@@ -27,13 +27,12 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      api.rezim.site
 // @BasePath  /api
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-// @description Type "Bearer" followed by a space and JWT token. Example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+// @description To authenticate, provide the API token with the 'Bearer ' prefix. Example: 'Bearer your_token_here'
 
 func main() {
 	// Load environment variables

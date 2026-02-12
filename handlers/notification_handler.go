@@ -38,7 +38,9 @@ type UpdateNotificationRequest struct {
 // @Param        request  body      CreateNotificationRequest  true  "Notification Request"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications [post]
 func CreateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var req CreateNotificationRequest
@@ -125,7 +127,9 @@ func CreateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications [get]
 func GetNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var notifications []models.Notification
@@ -202,8 +206,10 @@ func GetNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Notification ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications/{id} [get]
 func GetNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -243,7 +249,9 @@ func GetNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications/user/{user_id} [get]
 func GetUserNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	userID := c.Params("user_id")
@@ -314,8 +322,10 @@ func GetUserNotificationsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        request  body      UpdateNotificationRequest  true  "Update Notification Request"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications/{id} [put]
 func UpdateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -414,8 +424,10 @@ func UpdateNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Notification ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications/{id}/read [post]
 func MarkAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
@@ -461,7 +473,9 @@ func MarkAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        user_id  path      int  true  "User ID"
 // @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications/user/{user_id}/read-all [post]
 func MarkAllAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 	userID := c.Params("user_id")
@@ -493,8 +507,10 @@ func MarkAllAsReadHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id   path      int  true  "Notification ID"
 // @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
 // @Router       /notifications/{id} [delete]
 func DeleteNotificationHandler(c *fiber.Ctx, db *gorm.DB) error {
 	id := c.Params("id")
