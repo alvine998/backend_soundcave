@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"backend_soundcave/utils"
+	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,6 +11,22 @@ import (
 // AuthMiddleware middleware untuk memverifikasi JWT token
 func AuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
+	// Debug logging for Swagger 401 issue
+	if strings.HasPrefix(c.Path(), "/api/swagger") || strings.Contains(c.Path(), "/docs/") {
+		// skip logging for swagger static files
+	} else if authHeader != "" {
+		// Only log the first few characters of the token for security
+		tokenPreview := ""
+		if len(authHeader) > 20 {
+			tokenPreview = authHeader[:20] + "..."
+		} else {
+			tokenPreview = authHeader
+		}
+		log.Printf("[DEBUG] AuthMiddleware: Received Authorization header: %s", tokenPreview)
+	} else {
+		log.Printf("[DEBUG] AuthMiddleware: No Authorization header received for path: %s", c.Path())
+	}
+
 	if authHeader == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
@@ -58,4 +75,3 @@ func AdminMiddleware(c *fiber.Ctx) error {
 
 	return c.Next()
 }
-

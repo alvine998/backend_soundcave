@@ -115,7 +115,8 @@ const docTemplate = `{
                 ],
                 "description": "Create a new album",
                 "consumes": [
-                    "application/json"
+                    "application/json",
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -126,13 +127,69 @@ const docTemplate = `{
                 "summary": "Create new album",
                 "parameters": [
                     {
-                        "description": "Album Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreateAlbumRequest"
-                        }
+                        "type": "string",
+                        "description": "Album Title",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Artist ID",
+                        "name": "artist_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Artist Name",
+                        "name": "artist",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Release Date (YYYY-MM-DD)",
+                        "name": "release_date",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Album Type (single, EP, album, compilation)",
+                        "name": "album_type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Genre",
+                        "name": "genre",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Total Tracks",
+                        "name": "total_tracks",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Record Label",
+                        "name": "record_label",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Album cover image file",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Album cover image URL (if not uploading file)",
+                        "name": "image_url",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -233,7 +290,8 @@ const docTemplate = `{
                 ],
                 "description": "Update album information",
                 "consumes": [
-                    "application/json"
+                    "application/json",
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -251,13 +309,64 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Update Album Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.UpdateAlbumRequest"
-                        }
+                        "type": "string",
+                        "description": "Album Title",
+                        "name": "title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Artist ID",
+                        "name": "artist_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Artist Name",
+                        "name": "artist",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Release Date (YYYY-MM-DD)",
+                        "name": "release_date",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Album Type (single, EP, album, compilation)",
+                        "name": "album_type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Genre",
+                        "name": "genre",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Total Tracks",
+                        "name": "total_tracks",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Record Label",
+                        "name": "record_label",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Album cover image file",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Album cover image URL (if not uploading file)",
+                        "name": "image_url",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -6158,53 +6267,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.CreateAlbumRequest": {
-            "type": "object",
-            "required": [
-                "album_type",
-                "artist",
-                "artist_id",
-                "release_date",
-                "title"
-            ],
-            "properties": {
-                "album_type": {
-                    "type": "string",
-                    "enum": [
-                        "single",
-                        "EP",
-                        "album",
-                        "compilation"
-                    ]
-                },
-                "artist": {
-                    "type": "string"
-                },
-                "artist_id": {
-                    "type": "integer"
-                },
-                "genre": {
-                    "type": "string"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "record_label": {
-                    "type": "string"
-                },
-                "release_date": {
-                    "description": "Format: \"2006-01-02\"",
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "total_tracks": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
         "handlers.CreateAppInfoRequest": {
             "type": "object",
             "required": [
@@ -6772,46 +6834,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.UpdateAlbumRequest": {
-            "type": "object",
-            "properties": {
-                "album_type": {
-                    "type": "string",
-                    "enum": [
-                        "single",
-                        "EP",
-                        "album",
-                        "compilation"
-                    ]
-                },
-                "artist": {
-                    "type": "string"
-                },
-                "artist_id": {
-                    "type": "integer"
-                },
-                "genre": {
-                    "type": "string"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "record_label": {
-                    "type": "string"
-                },
-                "release_date": {
-                    "description": "Format: \"2006-01-02\"",
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "total_tracks": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
         "handlers.UpdateAppInfoRequest": {
             "type": "object",
             "properties": {
@@ -7288,7 +7310,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "BearerAuth": {
-            "description": "To authenticate, provide the API token with the 'Bearer ' prefix. Example: 'Bearer your_token_here'",
+            "description": "Type 'Bearer ' followed by a space and your JWT token. Example: 'Bearer eyJhbGciOiJIUzI1Ni...'",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -7301,7 +7323,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
 	BasePath:         "/api",
-	Schemes:          []string{},
+	Schemes:          []string{"http", "https"},
 	Title:            "SoundCave Backend API",
 	Description:      "API documentation for SoundCave Backend - Music streaming platform",
 	InfoInstanceName: "swagger",

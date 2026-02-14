@@ -28,11 +28,12 @@ import (
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @BasePath  /api
+// @Schemes   http https
 
 // @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description To authenticate, provide the API token with the 'Bearer ' prefix. Example: 'Bearer your_token_here'
+// @in                         header
+// @name                       Authorization
+// @description                Type 'Bearer ' followed by a space and your JWT token. Example: 'Bearer eyJhbGciOiJIUzI1Ni...'
 
 func main() {
 	// Load environment variables

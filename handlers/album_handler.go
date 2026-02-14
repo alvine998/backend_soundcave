@@ -1,7 +1,15 @@
 package handlers
 
 import (
+	"backend_soundcave/config"
 	"backend_soundcave/models"
+	"context"
+	"fmt"
+	"io"
+	"mime/multipart"
+	"net/url"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,28 +18,28 @@ import (
 
 // CreateAlbumRequest struct untuk request create album
 type CreateAlbumRequest struct {
-	Title       string  `json:"title" validate:"required"`
-	ArtistID    int     `json:"artist_id" validate:"required"`
-	Artist      string  `json:"artist" validate:"required"`
-	ReleaseDate string  `json:"release_date" validate:"required"` // Format: "2006-01-02"
-	AlbumType   string  `json:"album_type" validate:"required,oneof=single EP album compilation"`
-	Genre       string  `json:"genre"`
-	TotalTracks int     `json:"total_tracks" validate:"min=0"`
-	RecordLabel *string `json:"record_label"`
-	Image       *string `json:"image"`
+	Title       string  `json:"title" form:"title" validate:"required"`
+	ArtistID    int     `json:"artist_id" form:"artist_id" validate:"required"`
+	Artist      string  `json:"artist" form:"artist" validate:"required"`
+	ReleaseDate string  `json:"release_date" form:"release_date" validate:"required"` // Format: "2006-01-02"
+	AlbumType   string  `json:"album_type" form:"album_type" validate:"required,oneof=single EP album compilation"`
+	Genre       string  `json:"genre" form:"genre"`
+	TotalTracks int     `json:"total_tracks" form:"total_tracks" validate:"min=0"`
+	RecordLabel *string `json:"record_label" form:"record_label"`
+	Image       *string `json:"image" form:"image"`
 }
 
 // UpdateAlbumRequest struct untuk request update album
 type UpdateAlbumRequest struct {
-	Title       *string `json:"title"`
-	ArtistID    *int    `json:"artist_id"`
-	Artist      *string `json:"artist"`
-	ReleaseDate *string `json:"release_date"` // Format: "2006-01-02"
-	AlbumType   *string `json:"album_type" validate:"omitempty,oneof=single EP album compilation"`
-	Genre       *string `json:"genre"`
-	TotalTracks *int    `json:"total_tracks" validate:"omitempty,min=0"`
-	RecordLabel *string `json:"record_label"`
-	Image       *string `json:"image"`
+	Title       *string `json:"title" form:"title"`
+	ArtistID    *int    `json:"artist_id" form:"artist_id"`
+	Artist      *string `json:"artist" form:"artist"`
+	ReleaseDate *string `json:"release_date" form:"release_date"` // Format: "2006-01-02"
+	AlbumType   *string `json:"album_type" form:"album_type" validate:"omitempty,oneof=single EP album compilation"`
+	Genre       *string `json:"genre" form:"genre"`
+	TotalTracks *int    `json:"total_tracks" form:"total_tracks" validate:"omitempty,min=0"`
+	RecordLabel *string `json:"record_label" form:"record_label"`
+	Image       *string `json:"image" form:"image"`
 }
 
 // CreateAlbumHandler membuat album baru
@@ -39,8 +47,18 @@ type UpdateAlbumRequest struct {
 // @Description  Create a new album
 // @Tags         Albums
 // @Accept       json
+// @Accept       multipart/form-data
 // @Produce      json
-// @Param        request  body      CreateAlbumRequest  true  "Album Request"
+// @Param        title         formData  string  true   "Album Title"
+// @Param        artist_id     formData  int     true   "Artist ID"
+// @Param        artist        formData  string  true   "Artist Name"
+// @Param        release_date  formData  string  true   "Release Date (YYYY-MM-DD)"
+// @Param        album_type    formData  string  true   "Album Type (single, EP, album, compilation)"
+// @Param        genre         formData  string  false  "Genre"
+// @Param        total_tracks  formData  int     false  "Total Tracks"
+// @Param        record_label  formData  string  false  "Record Label"
+// @Param        image         formData  file    false  "Album cover image file"
+// @Param        image_url     formData  string  false  "Album cover image URL (if not uploading file)"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
 // @Failure      401      {object}  map[string]interface{}
@@ -56,6 +74,27 @@ func CreateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 			"message": "Gagal parse request body",
 			"error":   err.Error(),
 		})
+	}
+
+	// Handle image upload from multipart form
+	file, err := c.FormFile("image")
+	if err == nil {
+		// Upload image to Firebase Storage
+		imageURL, err := uploadAlbumImageToFirebase(c, file)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "Gagal upload album cover",
+				"error":   err.Error(),
+			})
+		}
+		req.Image = &imageURL
+	} else if req.Image == nil {
+		// Try to get image_url from form if image file is not provided
+		imageURL := c.FormValue("image_url")
+		if imageURL != "" {
+			req.Image = &imageURL
+		}
 	}
 
 	// Parse release date
@@ -237,9 +276,19 @@ func GetAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Description  Update album information
 // @Tags         Albums
 // @Accept       json
+// @Accept       multipart/form-data
 // @Produce      json
-// @Param        id       path      int                true  "Album ID"
-// @Param        request  body      UpdateAlbumRequest  true  "Update Album Request"
+// @Param        id            path      int     true   "Album ID"
+// @Param        title         formData  string  false  "Album Title"
+// @Param        artist_id     formData  int     false  "Artist ID"
+// @Param        artist        formData  string  false  "Artist Name"
+// @Param        release_date  formData  string  false  "Release Date (YYYY-MM-DD)"
+// @Param        album_type    formData  string  false  "Album Type (single, EP, album, compilation)"
+// @Param        genre         formData  string  false  "Genre"
+// @Param        total_tracks  formData  int     false  "Total Tracks"
+// @Param        record_label  formData  string  false  "Record Label"
+// @Param        image         formData  file    false  "Album cover image file"
+// @Param        image_url     formData  string  false  "Album cover image URL (if not uploading file)"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
 // @Failure      401      {object}  map[string]interface{}
@@ -272,6 +321,27 @@ func UpdateAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 			"message": "Gagal parse request body",
 			"error":   err.Error(),
 		})
+	}
+
+	// Handle image upload from multipart form
+	file, err := c.FormFile("image")
+	if err == nil {
+		// Upload image to Firebase Storage
+		imageURL, err := uploadAlbumImageToFirebase(c, file)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "Gagal upload album cover",
+				"error":   err.Error(),
+			})
+		}
+		req.Image = &imageURL
+	} else {
+		// Try to get image_url from form if image file is not provided
+		imageURL := c.FormValue("image_url")
+		if imageURL != "" {
+			req.Image = &imageURL
+		}
 	}
 
 	// Update fields jika ada
@@ -391,4 +461,84 @@ func DeleteAlbumHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"success": true,
 		"message": "Album berhasil dihapus",
 	})
+}
+
+// uploadAlbumImageToFirebase helper function to upload album cover to Firebase
+func uploadAlbumImageToFirebase(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
+	// Validasi file size (max 5GB, but here 10MB is enough for cover)
+	maxSize := int64(10 * 1024 * 1024) // 10MB
+	if file.Size > maxSize {
+		return "", fmt.Errorf("ukuran file terlalu besar (maksimal 10MB)")
+	}
+
+	// Validasi file type
+	allowedTypes := map[string]bool{
+		"image/jpeg": true,
+		"image/jpg":  true,
+		"image/png":  true,
+		"image/gif":  true,
+		"image/webp": true,
+	}
+	if !allowedTypes[file.Header.Get("Content-Type")] {
+		return "", fmt.Errorf("tipe file tidak diizinkan. Hanya gambar (JPEG, PNG, GIF, WEBP)")
+	}
+
+	// Buka file
+	src, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer src.Close()
+
+	// Generate unique filename
+	ext := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+	bucketPath := fmt.Sprintf("albums/%s", filename)
+
+	// Upload ke Firebase Storage
+	ctx := context.Background()
+	bucket, err := config.GetStorageBucket()
+	if err != nil {
+		return "", err
+	}
+	if bucket == nil {
+		return "", fmt.Errorf("firebase storage bucket tidak tersedia")
+	}
+
+	// Buat object writer
+	obj := bucket.Object(bucketPath)
+	writer := obj.NewWriter(ctx)
+	writer.ContentType = file.Header.Get("Content-Type")
+	writer.CacheControl = "public, max-age=31536000"
+
+	// Copy file ke Firebase Storage
+	if _, err := io.Copy(writer, src); err != nil {
+		writer.Close()
+		return "", err
+	}
+
+	// Close writer
+	if err := writer.Close(); err != nil {
+		return "", err
+	}
+
+	// Set public access
+	if err := obj.ACL().Set(ctx, "allUsers", "READER"); err != nil {
+		return "", err
+	}
+
+	// Get public URL
+	bucketName := os.Getenv("FIREBASE_STORAGE_BUCKET")
+	if bucketName == "" {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return "", err
+		}
+		bucketName = attrs.Bucket
+	}
+
+	imageURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+		bucketName, url.QueryEscape(bucketPath))
+
+	return imageURL, nil
 }

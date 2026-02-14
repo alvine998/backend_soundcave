@@ -8,40 +8,6 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
-  handlers.CreateAlbumRequest:
-    properties:
-      album_type:
-        enum:
-        - single
-        - EP
-        - album
-        - compilation
-        type: string
-      artist:
-        type: string
-      artist_id:
-        type: integer
-      genre:
-        type: string
-      image:
-        type: string
-      record_label:
-        type: string
-      release_date:
-        description: 'Format: "2006-01-02"'
-        type: string
-      title:
-        type: string
-      total_tracks:
-        minimum: 0
-        type: integer
-    required:
-    - album_type
-    - artist
-    - artist_id
-    - release_date
-    - title
-    type: object
   handlers.CreateAppInfoRequest:
     properties:
       address:
@@ -440,34 +406,6 @@ definitions:
     - full_name
     - password
     type: object
-  handlers.UpdateAlbumRequest:
-    properties:
-      album_type:
-        enum:
-        - single
-        - EP
-        - album
-        - compilation
-        type: string
-      artist:
-        type: string
-      artist_id:
-        type: integer
-      genre:
-        type: string
-      image:
-        type: string
-      record_label:
-        type: string
-      release_date:
-        description: 'Format: "2006-01-02"'
-        type: string
-      title:
-        type: string
-      total_tracks:
-        minimum: 0
-        type: integer
-    type: object
   handlers.UpdateAppInfoRequest:
     properties:
       address:
@@ -859,14 +797,54 @@ paths:
     post:
       consumes:
       - application/json
+      - multipart/form-data
       description: Create a new album
       parameters:
-      - description: Album Request
-        in: body
-        name: request
+      - description: Album Title
+        in: formData
+        name: title
         required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateAlbumRequest'
+        type: string
+      - description: Artist ID
+        in: formData
+        name: artist_id
+        required: true
+        type: integer
+      - description: Artist Name
+        in: formData
+        name: artist
+        required: true
+        type: string
+      - description: Release Date (YYYY-MM-DD)
+        in: formData
+        name: release_date
+        required: true
+        type: string
+      - description: Album Type (single, EP, album, compilation)
+        in: formData
+        name: album_type
+        required: true
+        type: string
+      - description: Genre
+        in: formData
+        name: genre
+        type: string
+      - description: Total Tracks
+        in: formData
+        name: total_tracks
+        type: integer
+      - description: Record Label
+        in: formData
+        name: record_label
+        type: string
+      - description: Album cover image file
+        in: formData
+        name: image
+        type: file
+      - description: Album cover image URL (if not uploading file)
+        in: formData
+        name: image_url
+        type: string
       produces:
       - application/json
       responses:
@@ -975,6 +953,7 @@ paths:
     put:
       consumes:
       - application/json
+      - multipart/form-data
       description: Update album information
       parameters:
       - description: Album ID
@@ -982,12 +961,46 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Update Album Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.UpdateAlbumRequest'
+      - description: Album Title
+        in: formData
+        name: title
+        type: string
+      - description: Artist ID
+        in: formData
+        name: artist_id
+        type: integer
+      - description: Artist Name
+        in: formData
+        name: artist
+        type: string
+      - description: Release Date (YYYY-MM-DD)
+        in: formData
+        name: release_date
+        type: string
+      - description: Album Type (single, EP, album, compilation)
+        in: formData
+        name: album_type
+        type: string
+      - description: Genre
+        in: formData
+        name: genre
+        type: string
+      - description: Total Tracks
+        in: formData
+        name: total_tracks
+        type: integer
+      - description: Record Label
+        in: formData
+        name: record_label
+        type: string
+      - description: Album cover image file
+        in: formData
+        name: image
+        type: file
+      - description: Album cover image URL (if not uploading file)
+        in: formData
+        name: image_url
+        type: string
       produces:
       - application/json
       responses:
@@ -4872,10 +4885,13 @@ paths:
       summary: Update user
       tags:
       - Users
+schemes:
+- http
+- https
 securityDefinitions:
   BearerAuth:
-    description: 'To authenticate, provide the API token with the ''Bearer '' prefix.
-      Example: ''Bearer your_token_here'''
+    description: 'Type ''Bearer '' followed by a space and your JWT token. Example:
+      ''Bearer eyJhbGciOiJIUzI1Ni...'''
     in: header
     name: Authorization
     type: apiKey
