@@ -19,6 +19,7 @@ type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=6"`
 	Phone    string `json:"phone"`
+	Role     string `json:"role"` // Optional: user (default), admin, premium, independent, label
 }
 
 // LoginRequest struct untuk request login
@@ -34,7 +35,7 @@ type GoogleAuthRequest struct {
 
 // RegisterHandler menangani registrasi user baru
 // @Summary      Register new user
-// @Description  Register a new user account with role "user"
+// @Description  Register a new user account. Role defaults to "user" if not specified. Allowed roles: user, admin, premium, independent, label
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
@@ -109,13 +110,27 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 		phone = &req.Phone
 	}
 
+	// Tentukan role, default "user"
+	userRole := models.RoleUser
+	if req.Role != "" {
+		switch models.Role(req.Role) {
+		case models.RoleUser, models.RoleAdmin, models.RolePremium, models.RoleIndependent, models.RoleLabel:
+			userRole = models.Role(req.Role)
+		default:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Role tidak valid. Pilihan: user, admin, premium, independent, label",
+			})
+		}
+	}
+
 	hashedPasswordStr := string(hashedPassword)
 	user := models.User{
 		FullName: req.FullName,
 		Email:    req.Email,
 		Password: &hashedPasswordStr,
 		Phone:    phone,
-		Role:     models.RoleUser, // Default role adalah "user"
+		Role:     userRole,
 	}
 
 	if err := db.Create(&user).Error; err != nil {

@@ -54,8 +54,12 @@ func CreatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		isPublic = *req.IsPublic
 	}
 
+	// Get user_id from JWT context
+	userID := c.Locals("user_id").(uint)
+
 	// Buat playlist baru
 	playlist := models.Playlist{
+		UserID:      userID,
 		Name:        req.Name,
 		Description: req.Description,
 		IsPublic:    &isPublic,
@@ -102,6 +106,11 @@ func GetPlaylistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	// Query dengan pagination
 	query := db.Model(&models.Playlist{})
+
+	// Filter by user_id jika ada
+	if userID := c.Query("user_id"); userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
 
 	// Filter by is_public jika ada
 	if isPublic := c.Query("is_public"); isPublic != "" {

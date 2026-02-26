@@ -1335,7 +1335,7 @@ const docTemplate = `{
         },
         "/auth/register": {
             "post": {
-                "description": "Register a new user account with role \"user\"",
+                "description": "Register a new user account. Role defaults to \"user\" if not specified. Allowed roles: user, admin, premium, independent, label",
                 "consumes": [
                     "application/json"
                 ],
@@ -6884,6 +6884,10 @@ const docTemplate = `{
                     "minLength": 6
                 },
                 "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Optional: user (default), admin, premium, independent, label",
                     "type": "string"
                 }
             }
