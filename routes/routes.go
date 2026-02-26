@@ -74,6 +74,12 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	users.Post("/", func(c *fiber.Ctx) error {
 		return handlers.CreateUserHandler(c, db)
 	})
+	users.Post("/follow", func(c *fiber.Ctx) error {
+		return handlers.FollowUserHandler(c, db)
+	})
+	users.Post("/unfollow", func(c *fiber.Ctx) error {
+		return handlers.UnfollowUserHandler(c, db)
+	})
 	users.Get("/", func(c *fiber.Ctx) error {
 		return handlers.GetUsersHandler(c, db)
 	})

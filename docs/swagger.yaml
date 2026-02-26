@@ -376,6 +376,13 @@ definitions:
     - full_name
     - password
     type: object
+  handlers.FollowRequest:
+    properties:
+      target_user_id:
+        type: integer
+    required:
+    - target_user_id
+    type: object
   handlers.GoogleAuthRequest:
     properties:
       id_token:
@@ -4927,6 +4934,102 @@ paths:
       security:
       - BearerAuth: []
       summary: Update user
+      tags:
+      - Users
+  /users/follow:
+    post:
+      consumes:
+      - application/json
+      description: Follow an independent artist or label user. Only users with role
+        "user" can follow users with role "independent" or "label"
+      parameters:
+      - description: Follow Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FollowRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Follow user
+      tags:
+      - Users
+  /users/unfollow:
+    post:
+      consumes:
+      - application/json
+      description: Unfollow an independent artist or label user
+      parameters:
+      - description: Unfollow Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FollowRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Unfollow user
       tags:
       - Users
 schemes:
