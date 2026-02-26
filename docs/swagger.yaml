@@ -3240,6 +3240,45 @@ paths:
       summary: Increment stream count
       tags:
       - Musics
+  /musics/{id}/unlike:
+    post:
+      consumes:
+      - application/json
+      description: Decrement like count for a music track (unlike)
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Decrement like count
+      tags:
+      - Musics
   /musics/top-streamed:
     get:
       consumes:

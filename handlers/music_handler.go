@@ -570,10 +570,15 @@ func IncrementMusicStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Security     BearerAuth
 // @Router       /musics/{id}/like [post]
 func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
-	id := c.Params("id")
+	musicID, _ := strconv.ParseUint(c.Params("id"), 10, 32)
+	currentUserID := c.Locals("user_id").(uint)
+
+	// Mulai transaksi
+	tx := db.Begin()
 
 	var music models.Music
-	if err := db.First(&music, id).Error; err != nil {
+	if err := tx.First(&music, musicID).Error; err != nil {
+		tx.Rollback()
 		if err == gorm.ErrRecordNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"success": false,
@@ -587,7 +592,32 @@ func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Increment like count
+	// Cek apakah sudah like
+	var existingLike models.MusicLike
+	result := tx.Where("user_id = ? AND music_id = ?", currentUserID, uint(musicID)).First(&existingLike)
+	if result.Error == nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"success": false,
+			"message": "Anda sudah menyukai musik ini",
+		})
+	}
+
+	// Buat record like
+	like := models.MusicLike{
+		UserID:  currentUserID,
+		MusicID: uint(musicID),
+	}
+	if err := tx.Create(&like).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mencatat like",
+			"error":   err.Error(),
+		})
+	}
+
+	// Increment like count di tabel music
 	if music.LikeCount == nil {
 		count := 1
 		music.LikeCount = &count
@@ -595,7 +625,8 @@ func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 		*music.LikeCount++
 	}
 
-	if err := db.Save(&music).Error; err != nil {
+	if err := tx.Save(&music).Error; err != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
 			"message": "Gagal mengupdate like count",
@@ -603,9 +634,101 @@ func IncrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	tx.Commit()
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
-		"message": "Like count berhasil diupdate",
+		"message": "Like berhasil ditambahkan",
+		"data":    music,
+	})
+}
+
+// DecrementLikeCountHandler mengurangi like count
+// @Summary      Decrement like count
+// @Description  Decrement like count for a music track (unlike)
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /musics/{id}/unlike [post]
+func DecrementLikeCountHandler(c *fiber.Ctx, db *gorm.DB) error {
+	musicID, _ := strconv.ParseUint(c.Params("id"), 10, 32)
+	currentUserID := c.Locals("user_id").(uint)
+
+	// Mulai transaksi
+	tx := db.Begin()
+
+	var music models.Music
+	if err := tx.First(&music, musicID).Error; err != nil {
+		tx.Rollback()
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Music tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data music",
+			"error":   err.Error(),
+		})
+	}
+
+	// Cek apakah ada record like
+	var existingLike models.MusicLike
+	result := tx.Where("user_id = ? AND music_id = ?", currentUserID, uint(musicID)).First(&existingLike)
+	if result.Error != nil {
+		tx.Rollback()
+		if result.Error == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Anda belum menyukai musik ini",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal memeriksa status like",
+			"error":   result.Error.Error(),
+		})
+	}
+
+	// Hapus record like
+	if err := tx.Delete(&existingLike).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menghapus like",
+			"error":   err.Error(),
+		})
+	}
+
+	// Decrement like count di tabel music
+	if music.LikeCount != nil && *music.LikeCount > 0 {
+		*music.LikeCount--
+	} else {
+		count := 0
+		music.LikeCount = &count
+	}
+
+	if err := tx.Save(&music).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengupdate like count",
+			"error":   err.Error(),
+		})
+	}
+
+	tx.Commit()
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Like berhasil dihapus",
 		"data":    music,
 	})
 }

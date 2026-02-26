@@ -206,6 +206,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	musics.Post("/:id/like", func(c *fiber.Ctx) error {
 		return handlers.IncrementLikeCountHandler(c, db)
 	})
+	musics.Post("/:id/unlike", func(c *fiber.Ctx) error {
+		return handlers.DecrementLikeCountHandler(c, db)
+	})
 	musics.Post("/:id/stream", func(c *fiber.Ctx) error {
 		return handlers.IncrementMusicStreamHandler(c, db)
 	})
