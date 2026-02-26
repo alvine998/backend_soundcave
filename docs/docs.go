@@ -1917,6 +1917,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/dashboard/artist-stats": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get dashboard statistics for independent artist or label users including album, song, and music video counts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get artist dashboard statistics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/dashboard/customer-report": {
             "get": {
                 "security": [
@@ -6415,6 +6465,10 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "background": {
+                    "description": "Background image URL or path",
+                    "type": "string"
+                },
                 "color": {
                     "description": "Hex color code (e.g., #FF5733)",
                     "type": "string"
@@ -6958,6 +7012,10 @@ const docTemplate = `{
         "handlers.UpdateGenreRequest": {
             "type": "object",
             "properties": {
+                "background": {
+                    "description": "Background image URL or path",
+                    "type": "string"
+                },
                 "color": {
                     "description": "Hex color code (e.g., #FF5733)",
                     "type": "string"

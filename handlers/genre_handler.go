@@ -12,14 +12,16 @@ import (
 type CreateGenreRequest struct {
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description" validate:"required"`
-	Color       *string `json:"color"` // Hex color code (e.g., #FF5733)
+	Color       *string `json:"color"`      // Hex color code (e.g., #FF5733)
+	Background  *string `json:"background"` // Background image URL or path
 }
 
 // UpdateGenreRequest struct untuk request update genre
 type UpdateGenreRequest struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
-	Color       *string `json:"color"` // Hex color code (e.g., #FF5733)
+	Color       *string `json:"color"`      // Hex color code (e.g., #FF5733)
+	Background  *string `json:"background"` // Background image URL or path
 }
 
 // validateHexColor memvalidasi format hex color
@@ -79,6 +81,7 @@ func CreateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Name:        req.Name,
 		Description: req.Description,
 		Color:       req.Color,
+		Background:  req.Background,
 	}
 
 	if err := db.Create(&genre).Error; err != nil {
@@ -255,6 +258,10 @@ func UpdateGenreHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.Description != nil {
 		genre.Description = *req.Description
+	}
+
+	if req.Background != nil {
+		genre.Background = req.Background
 	}
 
 	if req.Color != nil {

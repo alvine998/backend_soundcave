@@ -110,6 +110,9 @@ definitions:
     type: object
   handlers.CreateGenreRequest:
     properties:
+      background:
+        description: Background image URL or path
+        type: string
       color:
         description: 'Hex color code (e.g., #FF5733)'
         type: string
@@ -491,6 +494,9 @@ definitions:
     type: object
   handlers.UpdateGenreRequest:
     properties:
+      background:
+        description: Background image URL or path
+        type: string
       color:
         description: 'Hex color code (e.g., #FF5733)'
         type: string
@@ -2002,6 +2008,40 @@ paths:
       summary: Upload cavelist video file
       tags:
       - Cavelists
+  /dashboard/artist-stats:
+    get:
+      consumes:
+      - application/json
+      description: Get dashboard statistics for independent artist or label users
+        including album, song, and music video counts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get artist dashboard statistics
+      tags:
+      - Dashboard
   /dashboard/customer-report:
     get:
       consumes:

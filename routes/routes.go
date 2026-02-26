@@ -50,6 +50,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	protected.Get("/dashboard/customer-report", func(c *fiber.Ctx) error {
 		return handlers.GetCustomerReportHandler(c, db)
 	})
+	protected.Get("/dashboard/artist-stats", func(c *fiber.Ctx) error {
+		return handlers.GetArtistDashboardStatsHandler(c, db)
+	})
 
 	// Image upload routes (Public for viewing, but maybe should be protected? Keeping as is for now unless asked)
 	images := api.Group("/images")
