@@ -10,9 +10,11 @@ import (
 type Role string
 
 const (
-	RoleUser    Role = "user"
-	RoleAdmin   Role = "admin"
-	RolePremium Role = "premium"
+	RoleUser        Role = "user"
+	RoleAdmin       Role = "admin"
+	RolePremium     Role = "premium"
+	RoleIndependent Role = "independent"
+	RoleLabel       Role = "label"
 )
 
 // User model sesuai struktur tabel
@@ -25,7 +27,7 @@ type User struct {
 	Location     *string        `json:"location" gorm:"size:255"`
 	Bio          *string        `json:"bio" gorm:"type:text"`
 	ProfileImage *string        `json:"profile_image" gorm:"column:profile_image;size:255"`
-	Role         Role           `json:"role" gorm:"type:enum('user','admin','premium');default:'user'"`
+	Role         Role           `json:"role" gorm:"type:enum('user','admin','premium','independent','label');default:'user'"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	DeletedAt    gorm.DeletedAt `json:"deleted_at" gorm:"index"`
