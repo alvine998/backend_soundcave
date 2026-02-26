@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"backend_soundcave/models"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -409,5 +410,150 @@ func GetRandomArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"success": true,
 		"data":    artists,
 		"count":   len(artists),
+	})
+}
+
+// FollowArtistHandler menangani follow artist oleh user
+// @Summary      Follow artist
+// @Description  Follow an artist and increment their follower count
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Artist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      409  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /artists/{id}/follow [post]
+func FollowArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
+	artistID := c.Params("id")
+	currentUserID := c.Locals("user_id").(uint)
+
+	var artist models.Artist
+	if err := db.First(&artist, artistID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Artist tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data artist",
+			"error":   err.Error(),
+		})
+	}
+
+	// Check if already following
+	currentUserIDStr := fmt.Sprintf("%d", currentUserID)
+	if artist.Followers != nil {
+		for _, followerID := range artist.Followers {
+			if followerID == currentUserIDStr {
+				return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+					"success": false,
+					"message": "Anda sudah follow artist ini",
+				})
+			}
+		}
+	}
+
+	// Add follower
+	if artist.Followers == nil {
+		artist.Followers = models.JSONStringArray{}
+	}
+	artist.Followers = append(artist.Followers, currentUserIDStr)
+	artist.TotalFollower = len(artist.Followers)
+
+	if err := db.Save(&artist).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal follow artist",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Berhasil follow artist",
+		"data": fiber.Map{
+			"artist_id":      artist.ID,
+			"total_follower": artist.TotalFollower,
+		},
+	})
+}
+
+// UnfollowArtistHandler menangani unfollow artist oleh user
+// @Summary      Unfollow artist
+// @Description  Unfollow an artist and decrement their follower count
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Artist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /artists/{id}/unfollow [post]
+func UnfollowArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
+	artistID := c.Params("id")
+	currentUserID := c.Locals("user_id").(uint)
+
+	var artist models.Artist
+	if err := db.First(&artist, artistID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Artist tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data artist",
+			"error":   err.Error(),
+		})
+	}
+
+	// Remove follower
+	currentUserIDStr := fmt.Sprintf("%d", currentUserID)
+	found := false
+	var newFollowers models.JSONStringArray
+	for _, followerID := range artist.Followers {
+		if followerID == currentUserIDStr {
+			found = true
+			continue
+		}
+		newFollowers = append(newFollowers, followerID)
+	}
+
+	if !found {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Anda belum follow artist ini",
+		})
+	}
+
+	artist.Followers = newFollowers
+	artist.TotalFollower = len(newFollowers)
+
+	if err := db.Save(&artist).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal unfollow artist",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Berhasil unfollow artist",
+		"data": fiber.Map{
+			"artist_id":      artist.ID,
+			"total_follower": artist.TotalFollower,
+		},
 	})
 }

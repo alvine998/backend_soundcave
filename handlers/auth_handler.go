@@ -4,6 +4,7 @@ import (
 	"backend_soundcave/models"
 	"backend_soundcave/utils"
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -140,6 +141,22 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 			"message": "Gagal membuat user",
 			"error":   err.Error(),
 		})
+	}
+
+	// Jika role adalah independent, buat record artist juga
+	if userRole == models.RoleIndependent {
+		artist := models.Artist{
+			RefUserID: &user.ID,
+			Name:      user.FullName,
+			Email:     user.Email,
+			Phone:     user.Phone,
+			Bio:       "Independent Artist", // Default bio karena field bio di model artist not null
+		}
+		if err := db.Create(&artist).Error; err != nil {
+			// Jika gagal buat artist, kita log saja tapi tetap anggap register user berhasil
+			// Atau bisa juga di-rollback, tapi register user sudah sukses di DB
+			fmt.Printf("Gagal membuat record artist untuk user %d: %v\n", user.ID, err)
+		}
 	}
 
 	// Return user data tanpa token (user perlu login terpisah untuk mendapatkan token)

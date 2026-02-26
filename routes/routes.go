@@ -143,6 +143,12 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	artists.Get("/", func(c *fiber.Ctx) error {
 		return handlers.GetArtistsHandler(c, db)
 	})
+	artists.Post("/:id/follow", func(c *fiber.Ctx) error {
+		return handlers.FollowArtistHandler(c, db)
+	})
+	artists.Post("/:id/unfollow", func(c *fiber.Ctx) error {
+		return handlers.UnfollowArtistHandler(c, db)
+	})
 	artists.Get("/:id", func(c *fiber.Ctx) error {
 		return handlers.GetArtistHandler(c, db)
 	})
