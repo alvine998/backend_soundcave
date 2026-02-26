@@ -26,6 +26,7 @@ type Music struct {
 	CoverImageURL *string        `json:"cover_image_url" gorm:"size:500"`
 	PlayCount     *int           `json:"play_count" gorm:"default:0"`
 	LikeCount     *int           `json:"like_count" gorm:"default:0"`
+	TotalStream   *int           `json:"total_stream" gorm:"default:0"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
@@ -35,4 +36,3 @@ type Music struct {
 func (Music) TableName() string {
 	return "musics"
 }
-

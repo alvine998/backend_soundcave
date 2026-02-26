@@ -206,6 +206,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	musics.Post("/:id/like", func(c *fiber.Ctx) error {
 		return handlers.IncrementLikeCountHandler(c, db)
 	})
+	musics.Post("/:id/stream", func(c *fiber.Ctx) error {
+		return handlers.IncrementMusicStreamHandler(c, db)
+	})
 
 	// Music Video CRUD routes (Protected)
 	musicVideos := api.Group("/music-videos", middleware.AuthMiddleware)
@@ -226,6 +229,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	})
 	musicVideos.Delete("/:id", func(c *fiber.Ctx) error {
 		return handlers.DeleteMusicVideoHandler(c, db)
+	})
+	musicVideos.Post("/:id/stream", func(c *fiber.Ctx) error {
+		return handlers.IncrementMusicVideoStreamHandler(c, db)
 	})
 
 	// Notification CRUD routes (Protected)
@@ -313,6 +319,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	})
 	podcasts.Delete("/:id", func(c *fiber.Ctx) error {
 		return handlers.DeletePodcastHandler(c, db)
+	})
+	podcasts.Post("/:id/stream", func(c *fiber.Ctx) error {
+		return handlers.IncrementPodcastStreamHandler(c, db)
 	})
 
 	// Subscription Plan CRUD routes (Protected)

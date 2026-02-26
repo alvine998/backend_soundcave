@@ -736,6 +736,8 @@ definitions:
         type: string
       title:
         type: string
+      total_stream:
+        type: integer
       updated_at:
         type: string
       video_url:
@@ -2809,6 +2811,45 @@ paths:
       summary: Update music video
       tags:
       - MusicVideos
+  /music-videos/{id}/stream:
+    post:
+      consumes:
+      - application/json
+      description: Increment total stream count for a music video
+      parameters:
+      - description: Music Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Increment stream count
+      tags:
+      - MusicVideos
   /music-videos/upload:
     post:
       consumes:
@@ -3158,6 +3199,45 @@ paths:
       security:
       - BearerAuth: []
       summary: Increment play count
+      tags:
+      - Musics
+  /musics/{id}/stream:
+    post:
+      consumes:
+      - application/json
+      description: Increment total stream count for a music track
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Increment stream count
       tags:
       - Musics
   /musics/top-streamed:
@@ -4500,6 +4580,45 @@ paths:
       security:
       - BearerAuth: []
       summary: Update podcast
+      tags:
+      - Podcasts
+  /podcasts/{id}/stream:
+    post:
+      consumes:
+      - application/json
+      description: Increment total stream count for a podcast episode
+      parameters:
+      - description: Podcast ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Increment stream count
       tags:
       - Podcasts
   /podcasts/upload:

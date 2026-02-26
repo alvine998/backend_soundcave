@@ -356,3 +356,57 @@ func DeleteMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Music video berhasil dihapus",
 	})
 }
+
+// IncrementMusicVideoStreamHandler menambah total stream music video
+// @Summary      Increment stream count
+// @Description  Increment total stream count for a music video
+// @Tags         MusicVideos
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music Video ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /music-videos/{id}/stream [post]
+func IncrementMusicVideoStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+
+	var musicVideo models.MusicVideo
+	if err := db.First(&musicVideo, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Music video tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data music video",
+			"error":   err.Error(),
+		})
+	}
+
+	// Increment total stream
+	if musicVideo.TotalStream == nil {
+		count := 1
+		musicVideo.TotalStream = &count
+	} else {
+		*musicVideo.TotalStream++
+	}
+
+	if err := db.Save(&musicVideo).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengupdate stream count",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Stream count berhasil diupdate",
+		"data":    musicVideo,
+	})
+}

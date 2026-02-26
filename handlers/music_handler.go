@@ -502,6 +502,60 @@ func IncrementPlayCountHandler(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
+// IncrementMusicStreamHandler menambah total stream music
+// @Summary      Increment stream count
+// @Description  Increment total stream count for a music track
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Music ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /musics/{id}/stream [post]
+func IncrementMusicStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+
+	var music models.Music
+	if err := db.First(&music, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Music tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data music",
+			"error":   err.Error(),
+		})
+	}
+
+	// Increment total stream
+	if music.TotalStream == nil {
+		count := 1
+		music.TotalStream = &count
+	} else {
+		*music.TotalStream++
+	}
+
+	if err := db.Save(&music).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengupdate stream count",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Stream count berhasil diupdate",
+		"data":    music,
+	})
+}
+
 // IncrementLikeCountHandler menambah like count
 // @Summary      Increment like count
 // @Description  Increment like count for a music track

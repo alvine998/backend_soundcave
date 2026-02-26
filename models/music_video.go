@@ -16,15 +16,15 @@ type MusicVideo struct {
 	Duration    string         `json:"duration" gorm:"size:10;not null"` // Format: MM:SS atau HH:MM:SS
 	Genre       string         `json:"genre" gorm:"size:100;not null"`
 	Description *string        `json:"description" gorm:"type:text"`
-	VideoURL     string         `json:"video_url" gorm:"size:500;not null"`
-	Thumbnail    *string        `json:"thumbnail" gorm:"size:255"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	DeletedAt    gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	VideoURL    string         `json:"video_url" gorm:"size:500;not null"`
+	Thumbnail   *string        `json:"thumbnail" gorm:"size:255"`
+	TotalStream *int           `json:"total_stream" gorm:"default:0"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
 // TableName mengembalikan nama tabel
 func (MusicVideo) TableName() string {
 	return "music_videos"
 }
-

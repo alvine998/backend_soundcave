@@ -369,3 +369,57 @@ func DeletePodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Podcast berhasil dihapus",
 	})
 }
+
+// IncrementPodcastStreamHandler menambah total stream podcast
+// @Summary      Increment stream count
+// @Description  Increment total stream count for a podcast episode
+// @Tags         Podcasts
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Podcast ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /podcasts/{id}/stream [post]
+func IncrementPodcastStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+
+	var podcast models.Podcast
+	if err := db.First(&podcast, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Podcast tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data podcast",
+			"error":   err.Error(),
+		})
+	}
+
+	// Increment total stream
+	if podcast.TotalStream == nil {
+		count := 1
+		podcast.TotalStream = &count
+	} else {
+		*podcast.TotalStream++
+	}
+
+	if err := db.Save(&podcast).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengupdate stream count",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Stream count berhasil diupdate",
+		"data":    podcast,
+	})
+}
