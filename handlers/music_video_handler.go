@@ -66,14 +66,18 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Parse release date
-	releaseDate, err := time.Parse("2006-01-02", req.ReleaseDate)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"success": false,
-			"message": "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD",
-			"error":   err.Error(),
-		})
+	// Parse release date (optional)
+	var releaseDatePtr *time.Time
+	if req.ReleaseDate != "" {
+		releaseDate, err := time.Parse("2006-01-02", req.ReleaseDate)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD",
+				"error":   err.Error(),
+			})
+		}
+		releaseDatePtr = &releaseDate
 	}
 
 	// Buat music_video baru
@@ -81,7 +85,7 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Title:       req.Title,
 		ArtistID:    req.ArtistID,
 		Artist:      req.Artist,
-		ReleaseDate: &releaseDate,
+		ReleaseDate: releaseDatePtr,
 		Duration:    req.Duration,
 		Genre:       req.Genre,
 		Description: req.Description,
@@ -290,15 +294,19 @@ func UpdateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	if req.ReleaseDate != nil {
-		releaseDate, err := time.Parse("2006-01-02", *req.ReleaseDate)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"success": false,
-				"message": "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD",
-				"error":   err.Error(),
-			})
+		if *req.ReleaseDate == "" {
+			musicVideo.ReleaseDate = nil
+		} else {
+			releaseDate, err := time.Parse("2006-01-02", *req.ReleaseDate)
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"success": false,
+					"message": "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD",
+					"error":   err.Error(),
+				})
+			}
+			musicVideo.ReleaseDate = &releaseDate
 		}
-		musicVideo.ReleaseDate = &releaseDate
 	}
 
 	if req.Duration != nil {
