@@ -54,8 +54,14 @@ func CreatePlaylistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		isPublic = *req.IsPublic
 	}
 
-	// Get user_id from JWT context
+	// Get user_id and role from JWT context
 	userID := c.Locals("user_id").(uint)
+	role := c.Locals("role").(string)
+
+	// If user is admin, set user_id to 0
+	if role == "admin" {
+		userID = 0
+	}
 
 	// Buat playlist baru
 	playlist := models.Playlist{
