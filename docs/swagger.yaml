@@ -162,6 +162,8 @@ definitions:
         type: integer
       lyrics:
         type: string
+      notes:
+        type: string
       play_count:
         type: integer
       release_date:
@@ -534,6 +536,8 @@ definitions:
         type: string
       album_id:
         type: integer
+      approved_by:
+        type: integer
       artist:
         type: string
       artist_id:
@@ -551,6 +555,8 @@ definitions:
         type: boolean
       genre:
         type: string
+      is_approved:
+        type: integer
       is_top100:
         type: integer
       language:
@@ -558,6 +564,8 @@ definitions:
       like_count:
         type: integer
       lyrics:
+        type: string
+      notes:
         type: string
       play_count:
         type: integer
@@ -570,6 +578,8 @@ definitions:
         type: string
       title:
         type: string
+      total_stream:
+        type: integer
     type: object
   handlers.UpdateMusicVideoRequest:
     properties:

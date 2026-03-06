@@ -31,6 +31,7 @@ type Music struct {
 	IsApproved    *int           `json:"is_approved" gorm:"type:tinyint(1);default:0"`
 	ApprovedBy    *int           `json:"approved_by" gorm:"index"`
 	IsTop100      *int           `json:"is_top100" gorm:"type:tinyint(1);default:0"`
+	Notes         *string        `json:"notes" gorm:"type:text"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`

@@ -30,6 +30,7 @@ type CreateMusicRequest struct {
 	LikeCount     *int    `json:"like_count"`
 	SubmittedBy   string  `json:"submitted_by"`
 	IsTop100      *int    `json:"is_top100"`
+	Notes         *string `json:"notes"`
 }
 
 // UpdateMusicRequest struct untuk request update music
@@ -53,6 +54,10 @@ type UpdateMusicRequest struct {
 	LikeCount     *int    `json:"like_count"`
 	SubmittedBy   *string `json:"submitted_by"`
 	IsTop100      *int    `json:"is_top100"`
+	IsApproved    *int    `json:"is_approved"`
+	ApprovedBy    *int    `json:"approved_by"`
+	TotalStream   *int    `json:"total_stream"`
+	Notes         *string `json:"notes"`
 }
 
 // CreateMusicHandler membuat music baru
@@ -147,6 +152,7 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 		SubmittedBy:   submittedBy,
 		IsApproved:    &isApproved,
 		IsTop100:      &isTop100,
+		Notes:         req.Notes,
 	}
 
 	if err := db.Create(&music).Error; err != nil {
@@ -446,6 +452,22 @@ func UpdateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.IsTop100 != nil {
 		music.IsTop100 = req.IsTop100
+	}
+
+	if req.IsApproved != nil {
+		music.IsApproved = req.IsApproved
+	}
+
+	if req.ApprovedBy != nil {
+		music.ApprovedBy = req.ApprovedBy
+	}
+
+	if req.TotalStream != nil {
+		music.TotalStream = req.TotalStream
+	}
+
+	if req.Notes != nil {
+		music.Notes = req.Notes
 	}
 
 	if err := db.Save(&music).Error; err != nil {

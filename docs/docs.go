@@ -7224,6 +7224,9 @@ const docTemplate = `{
                 "lyrics": {
                     "type": "string"
                 },
+                "notes": {
+                    "type": "string"
+                },
                 "play_count": {
                     "type": "integer"
                 },
@@ -7748,6 +7751,9 @@ const docTemplate = `{
                 "album_id": {
                     "type": "integer"
                 },
+                "approved_by": {
+                    "type": "integer"
+                },
                 "artist": {
                     "type": "string"
                 },
@@ -7773,6 +7779,9 @@ const docTemplate = `{
                 "genre": {
                     "type": "string"
                 },
+                "is_approved": {
+                    "type": "integer"
+                },
                 "is_top100": {
                     "type": "integer"
                 },
@@ -7783,6 +7792,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "lyrics": {
+                    "type": "string"
+                },
+                "notes": {
                     "type": "string"
                 },
                 "play_count": {
@@ -7800,6 +7812,9 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "total_stream": {
+                    "type": "integer"
                 }
             }
         },
