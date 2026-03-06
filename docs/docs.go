@@ -1175,7 +1175,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Soft delete an artist by ID",
+                "description": "Soft delete an artist by ID. Also removes associated user if ref_user_id is set.",
                 "consumes": [
                     "application/json"
                 ],
@@ -7077,6 +7077,9 @@ const docTemplate = `{
                 "country": {
                     "type": "string"
                 },
+                "cover_image": {
+                    "type": "string"
+                },
                 "debut_year": {
                     "type": "string"
                 },
@@ -7090,6 +7093,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                },
+                "photo": {
                     "type": "string"
                 },
                 "profile_image": {
@@ -7658,6 +7664,9 @@ const docTemplate = `{
                 "country": {
                     "type": "string"
                 },
+                "cover_image": {
+                    "type": "string"
+                },
                 "debut_year": {
                     "type": "string"
                 },
@@ -7674,6 +7683,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                },
+                "photo": {
                     "type": "string"
                 },
                 "profile_image": {

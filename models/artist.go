@@ -20,6 +20,8 @@ type Artist struct {
 	Phone         *string         `json:"phone" gorm:"size:20"`
 	SocialMedia   JSONB           `json:"social_media" gorm:"type:json"`
 	ProfileImage  *string         `json:"profile_image" gorm:"column:profile_image;size:255"`
+	CoverImage    *string         `json:"cover_image" gorm:"column:cover_image;size:255"`
+	Photo         *string         `json:"photo" gorm:"column:photo;size:255"`
 	Followers     JSONStringArray `json:"followers" gorm:"type:json"`
 	TotalFollower int             `json:"total_follower" gorm:"default:0"`
 	IsHighlight   *int            `json:"is_highlight" gorm:"type:tinyint(1);default:0"`

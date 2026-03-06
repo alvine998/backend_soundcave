@@ -20,6 +20,8 @@ type CreateArtistRequest struct {
 	Phone        *string                `json:"phone"`
 	SocialMedia  map[string]interface{} `json:"social_media"`
 	ProfileImage *string                `json:"profile_image"`
+	CoverImage   *string                `json:"cover_image"`
+	Photo        *string                `json:"photo"`
 }
 
 // UpdateArtistRequest struct untuk request update artist
@@ -34,6 +36,8 @@ type UpdateArtistRequest struct {
 	Phone        *string                `json:"phone"`
 	SocialMedia  map[string]interface{} `json:"social_media"`
 	ProfileImage *string                `json:"profile_image"`
+	CoverImage   *string                `json:"cover_image"`
+	Photo        *string                `json:"photo"`
 	IsHighlight  *int                   `json:"is_highlight"`
 }
 
@@ -88,6 +92,8 @@ func CreateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Phone:        req.Phone,
 		SocialMedia:  socialMedia,
 		ProfileImage: req.ProfileImage,
+		CoverImage:   req.CoverImage,
+		Photo:        req.Photo,
 	}
 
 	if err := db.Create(&artist).Error; err != nil {
@@ -319,6 +325,14 @@ func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		artist.ProfileImage = req.ProfileImage
 	}
 
+	if req.CoverImage != nil {
+		artist.CoverImage = req.CoverImage
+	}
+
+	if req.Photo != nil {
+		artist.Photo = req.Photo
+	}
+
 	if req.IsHighlight != nil {
 		artist.IsHighlight = req.IsHighlight
 	}
@@ -340,7 +354,7 @@ func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 // DeleteArtistHandler menghapus artist (soft delete)
 // @Summary      Delete artist
-// @Description  Soft delete an artist by ID
+// @Description  Soft delete an artist by ID. Also removes associated user if ref_user_id is set.
 // @Tags         Artists
 // @Accept       json
 // @Produce      json
