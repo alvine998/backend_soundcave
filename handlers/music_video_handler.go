@@ -19,6 +19,7 @@ type CreateMusicVideoRequest struct {
 	Description *string `json:"description"`
 	VideoURL    string  `json:"video_url" validate:"required"`
 	Thumbnail   *string `json:"thumbnail"`
+	SubmittedBy string  `json:"submitted_by"`
 }
 
 // UpdateMusicVideoRequest struct untuk request update music_video
@@ -32,6 +33,7 @@ type UpdateMusicVideoRequest struct {
 	Description *string `json:"description"`
 	VideoURL    *string `json:"video_url"`
 	Thumbnail   *string `json:"thumbnail"`
+	SubmittedBy *string `json:"submitted_by"`
 	IsApproved  *int    `json:"is_approved"`
 	ApprovedBy  *int    `json:"approved_by"`
 	IsHighlight *int    `json:"is_highlight"`
@@ -91,11 +93,23 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Description: req.Description,
 		VideoURL:    req.VideoURL,
 		Thumbnail:   req.Thumbnail,
+		SubmittedBy: "artist",
 		IsApproved:  new(int), // Default 0
 		IsHighlight: new(int), // Default 0
 	}
 	*musicVideo.IsApproved = 0
 	*musicVideo.IsHighlight = 0
+
+	// Validate submitted_by
+	if req.SubmittedBy != "" {
+		if req.SubmittedBy != "artist" && req.SubmittedBy != "label" && req.SubmittedBy != "admin" {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "submitted_by harus salah satu dari: artist, label, admin",
+			})
+		}
+		musicVideo.SubmittedBy = req.SubmittedBy
+	}
 
 	if err := db.Create(&musicVideo).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -127,6 +141,7 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        order      query     string  false  "Sort order" default(desc)
 // @Param        is_approved query    int     false  "Filter by approval status (0, 1, or 2)"
 // @Param        is_highlight query   int     false  "Filter by highlight status (0 or 1)"
+// @Param        submitted_by query   string  false  "Filter by submitter (artist, label, admin)"
 // @Success      200        {object}  map[string]interface{}
 // @Failure      401        {object}  map[string]interface{}
 // @Failure      500        {object}  map[string]interface{}
@@ -166,6 +181,11 @@ func GetMusicVideosHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Filter by is_highlight jika ada
 	if isHighlight := c.Query("is_highlight"); isHighlight != "" {
 		query = query.Where("is_highlight = ?", isHighlight)
+	}
+
+	// Filter by submitted_by jika ada
+	if submittedBy := c.Query("submitted_by"); submittedBy != "" {
+		query = query.Where("submitted_by = ?", submittedBy)
 	}
 
 	// Sort by created_at
@@ -339,6 +359,16 @@ func UpdateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.IsHighlight != nil {
 		musicVideo.IsHighlight = req.IsHighlight
+	}
+
+	if req.SubmittedBy != nil {
+		if *req.SubmittedBy != "artist" && *req.SubmittedBy != "label" && *req.SubmittedBy != "admin" {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "submitted_by harus salah satu dari: artist, label, admin",
+			})
+		}
+		musicVideo.SubmittedBy = *req.SubmittedBy
 	}
 
 	if err := db.Save(&musicVideo).Error; err != nil {

@@ -2905,6 +2905,12 @@ const docTemplate = `{
                         "description": "Filter by highlight status (0 or 1)",
                         "name": "is_highlight",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by submitter (artist, label, admin)",
+                        "name": "submitted_by",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -7381,6 +7387,9 @@ const docTemplate = `{
                     "description": "Format: \"2006-01-02\"",
                     "type": "string"
                 },
+                "submitted_by": {
+                    "type": "string"
+                },
                 "thumbnail": {
                     "type": "string"
                 },
@@ -7958,6 +7967,9 @@ const docTemplate = `{
                 },
                 "release_date": {
                     "description": "Format: \"2006-01-02\"",
+                    "type": "string"
+                },
+                "submitted_by": {
                     "type": "string"
                 },
                 "thumbnail": {

@@ -212,6 +212,8 @@ definitions:
       release_date:
         description: 'Format: "2006-01-02"'
         type: string
+      submitted_by:
+        type: string
       thumbnail:
         type: string
       title:
@@ -617,6 +619,8 @@ definitions:
         type: integer
       release_date:
         description: 'Format: "2006-01-02"'
+        type: string
+      submitted_by:
         type: string
       thumbnail:
         type: string
@@ -2723,6 +2727,10 @@ paths:
         in: query
         name: is_highlight
         type: integer
+      - description: Filter by submitter (artist, label, admin)
+        in: query
+        name: submitted_by
+        type: string
       produces:
       - application/json
       responses:
