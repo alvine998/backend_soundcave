@@ -369,13 +369,34 @@ func DeleteArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	if err := db.Delete(&artist).Error; err != nil {
+	// Gunakan transaksi untuk menghapus artist dan user terkait
+	tx := db.Begin()
+
+	// Jika artist punya ref_user_id, hapus user terkait juga
+	if artist.RefUserID != nil {
+		var user models.User
+		if err := tx.First(&user, *artist.RefUserID).Error; err == nil {
+			if err := tx.Delete(&user).Error; err != nil {
+				tx.Rollback()
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"success": false,
+					"message": "Gagal menghapus user terkait",
+					"error":   err.Error(),
+				})
+			}
+		}
+	}
+
+	if err := tx.Delete(&artist).Error; err != nil {
+		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
 			"message": "Gagal menghapus artist",
 			"error":   err.Error(),
 		})
 	}
+
+	tx.Commit()
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,

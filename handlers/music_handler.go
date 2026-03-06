@@ -79,14 +79,18 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Parse release date
-	releaseDate, err := time.Parse("2006-01-02", req.ReleaseDate)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"success": false,
-			"message": "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD",
-			"error":   err.Error(),
-		})
+	// Parse release date (optional)
+	var releaseDatePtr *time.Time
+	if req.ReleaseDate != "" {
+		releaseDate, err := time.Parse("2006-01-02", req.ReleaseDate)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Format tanggal tidak valid. Gunakan format: YYYY-MM-DD",
+				"error":   err.Error(),
+			})
+		}
+		releaseDatePtr = &releaseDate
 	}
 
 	// Set default values
@@ -129,7 +133,7 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Album:         req.Album,
 		AlbumID:       req.AlbumID,
 		Genre:         req.Genre,
-		ReleaseDate:   &releaseDate,
+		ReleaseDate:   releaseDatePtr,
 		Duration:      req.Duration,
 		Language:      req.Language,
 		Explicit:      &explicit,
