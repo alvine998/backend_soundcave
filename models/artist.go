@@ -22,6 +22,7 @@ type Artist struct {
 	ProfileImage  *string         `json:"profile_image" gorm:"column:profile_image;size:255"`
 	Followers     JSONStringArray `json:"followers" gorm:"type:json"`
 	TotalFollower int             `json:"total_follower" gorm:"default:0"`
+	IsHighlight   *int            `json:"is_highlight" gorm:"type:tinyint(1);default:0"`
 	CreatedAt     time.Time       `json:"created_at"`
 	UpdatedAt     time.Time       `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt  `json:"deleted_at" gorm:"index"`

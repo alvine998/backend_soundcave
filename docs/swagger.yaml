@@ -477,6 +477,8 @@ definitions:
         type: string
       genre:
         type: string
+      is_highlight:
+        type: integer
       name:
         type: string
       phone:
@@ -1348,6 +1350,10 @@ paths:
         in: query
         name: order
         type: string
+      - description: Filter by highlight status (0 or 1)
+        in: query
+        name: is_highlight
+        type: integer
       produces:
       - application/json
       responses:
@@ -1583,6 +1589,45 @@ paths:
       security:
       - BearerAuth: []
       summary: Follow artist
+      tags:
+      - Artists
+  /artists/{id}/highlight:
+    put:
+      consumes:
+      - application/json
+      description: Set an artist as highlighted
+      parameters:
+      - description: Artist ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Highlight artist
       tags:
       - Artists
   /artists/{id}/unfollow:

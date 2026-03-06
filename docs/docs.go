@@ -894,6 +894,12 @@ const docTemplate = `{
                         "description": "Sort order",
                         "name": "order",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by highlight status (0 or 1)",
+                        "name": "is_highlight",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1279,6 +1285,65 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/artists/{id}/highlight": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Set an artist as highlighted",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Artists"
+                ],
+                "summary": "Highlight artist",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Artist ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -7598,6 +7663,9 @@ const docTemplate = `{
                 },
                 "genre": {
                     "type": "string"
+                },
+                "is_highlight": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

@@ -34,6 +34,7 @@ type UpdateArtistRequest struct {
 	Phone        *string                `json:"phone"`
 	SocialMedia  map[string]interface{} `json:"social_media"`
 	ProfileImage *string                `json:"profile_image"`
+	IsHighlight  *int                   `json:"is_highlight"`
 }
 
 // CreateArtistHandler membuat artist baru
@@ -115,6 +116,7 @@ func CreateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        search   query     string  false  "Search by name"
 // @Param        sort_by  query     string  false  "Sort field" default(created_at)
 // @Param        order    query     string  false  "Sort order" default(desc)
+// @Param        is_highlight query  int     false  "Filter by highlight status (0 or 1)"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      401      {object}  map[string]interface{}
 // @Failure      500      {object}  map[string]interface{}
@@ -144,6 +146,11 @@ func GetArtistsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Filter by debut year jika ada
 	if debutYear := c.Query("debut_year"); debutYear != "" {
 		query = query.Where("debut_year = ?", debutYear)
+	}
+
+	// Filter by is_highlight jika ada
+	if isHighlight := c.Query("is_highlight"); isHighlight != "" {
+		query = query.Where("is_highlight = ?", isHighlight)
 	}
 
 	// Search by name atau email
@@ -310,6 +317,10 @@ func UpdateArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.ProfileImage != nil {
 		artist.ProfileImage = req.ProfileImage
+	}
+
+	if req.IsHighlight != nil {
+		artist.IsHighlight = req.IsHighlight
 	}
 
 	if err := db.Save(&artist).Error; err != nil {
@@ -555,5 +566,55 @@ func UnfollowArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
 			"artist_id":      artist.ID,
 			"total_follower": artist.TotalFollower,
 		},
+	})
+}
+
+// HighlightArtistHandler mengupdate status highlight artist
+// @Summary      Highlight artist
+// @Description  Set an artist as highlighted
+// @Tags         Artists
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Artist ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /artists/{id}/highlight [put]
+func HighlightArtistHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+
+	var artist models.Artist
+	if err := db.First(&artist, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Artist tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data artist",
+			"error":   err.Error(),
+		})
+	}
+
+	// Set is_highlight = 1
+	highlight := 1
+	artist.IsHighlight = &highlight
+
+	if err := db.Save(&artist).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengupdate highlight artist",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Artist berhasil di-highlight",
+		"data":    artist,
 	})
 }

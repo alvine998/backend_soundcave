@@ -158,6 +158,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	artists.Delete("/:id", func(c *fiber.Ctx) error {
 		return handlers.DeleteArtistHandler(c, db)
 	})
+	artists.Put("/:id/highlight", func(c *fiber.Ctx) error {
+		return handlers.HighlightArtistHandler(c, db)
+	})
 
 	// Genre CRUD routes (Protected)
 	genres := api.Group("/genres", middleware.AuthMiddleware)
