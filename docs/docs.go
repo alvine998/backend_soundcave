@@ -3297,6 +3297,24 @@ const docTemplate = `{
                         "description": "Sort order",
                         "name": "order",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by approval status (0 or 1)",
+                        "name": "is_approved",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by top 100 status (0 or 1)",
+                        "name": "is_top100",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by submitted_by (artist, label, admin)",
+                        "name": "submitted_by",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3651,6 +3669,81 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/musics/{id}/approve": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Approve a music track and set the approver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Musics"
+                ],
+                "summary": "Approve music",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Music ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Approve Music Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ApproveMusicRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -6835,6 +6928,17 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.ApproveMusicRequest": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.CreateAppInfoRequest": {
             "type": "object",
             "required": [
@@ -7043,6 +7147,9 @@ const docTemplate = `{
                 "genre": {
                     "type": "string"
                 },
+                "is_top100": {
+                    "type": "integer"
+                },
                 "language": {
                     "type": "string"
                 },
@@ -7057,6 +7164,9 @@ const docTemplate = `{
                 },
                 "release_date": {
                     "description": "Format: \"2006-01-02\"",
+                    "type": "string"
+                },
+                "submitted_by": {
                     "type": "string"
                 },
                 "tags": {
@@ -7595,6 +7705,9 @@ const docTemplate = `{
                 "genre": {
                     "type": "string"
                 },
+                "is_top100": {
+                    "type": "integer"
+                },
                 "language": {
                     "type": "string"
                 },
@@ -7609,6 +7722,9 @@ const docTemplate = `{
                 },
                 "release_date": {
                     "description": "Format: \"2006-01-02\"",
+                    "type": "string"
+                },
+                "submitted_by": {
                     "type": "string"
                 },
                 "tags": {

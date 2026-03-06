@@ -212,6 +212,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	musics.Post("/:id/stream", func(c *fiber.Ctx) error {
 		return handlers.IncrementMusicStreamHandler(c, db)
 	})
+	musics.Put("/:id/approve", func(c *fiber.Ctx) error {
+		return handlers.ApproveMusicHandler(c, db)
+	})
 
 	// Music Video CRUD routes (Protected)
 	musicVideos := api.Group("/music-videos", middleware.AuthMiddleware)

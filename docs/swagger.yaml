@@ -8,6 +8,13 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  handlers.ApproveMusicRequest:
+    properties:
+      user_id:
+        type: integer
+    required:
+    - user_id
+    type: object
   handlers.CreateAppInfoRequest:
     properties:
       address:
@@ -147,6 +154,8 @@ definitions:
         type: boolean
       genre:
         type: string
+      is_top100:
+        type: integer
       language:
         type: string
       like_count:
@@ -157,6 +166,8 @@ definitions:
         type: integer
       release_date:
         description: 'Format: "2006-01-02"'
+        type: string
+      submitted_by:
         type: string
       tags:
         type: string
@@ -538,6 +549,8 @@ definitions:
         type: boolean
       genre:
         type: string
+      is_top100:
+        type: integer
       language:
         type: string
       like_count:
@@ -548,6 +561,8 @@ definitions:
         type: integer
       release_date:
         description: 'Format: "2006-01-02"'
+        type: string
+      submitted_by:
         type: string
       tags:
         type: string
@@ -2935,6 +2950,18 @@ paths:
         in: query
         name: order
         type: string
+      - description: Filter by approval status (0 or 1)
+        in: query
+        name: is_approved
+        type: integer
+      - description: Filter by top 100 status (0 or 1)
+        in: query
+        name: is_top100
+        type: integer
+      - description: Filter by submitted_by (artist, label, admin)
+        in: query
+        name: submitted_by
+        type: string
       produces:
       - application/json
       responses:
@@ -3121,6 +3148,56 @@ paths:
       security:
       - BearerAuth: []
       summary: Update music
+      tags:
+      - Musics
+  /musics/{id}/approve:
+    put:
+      consumes:
+      - application/json
+      description: Approve a music track and set the approver
+      parameters:
+      - description: Music ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Approve Music Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ApproveMusicRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Approve music
       tags:
       - Musics
   /musics/{id}/like:

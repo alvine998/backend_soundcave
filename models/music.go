@@ -27,6 +27,10 @@ type Music struct {
 	PlayCount     *int           `json:"play_count" gorm:"default:0"`
 	LikeCount     *int           `json:"like_count" gorm:"default:0"`
 	TotalStream   *int           `json:"total_stream" gorm:"default:0"`
+	SubmittedBy   string         `json:"submitted_by" gorm:"type:enum('artist','label','admin');default:'artist'"`
+	IsApproved    *int           `json:"is_approved" gorm:"type:tinyint(1);default:0"`
+	ApprovedBy    *int           `json:"approved_by" gorm:"index"`
+	IsTop100      *int           `json:"is_top100" gorm:"type:tinyint(1);default:0"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`

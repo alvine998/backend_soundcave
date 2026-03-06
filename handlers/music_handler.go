@@ -28,6 +28,8 @@ type CreateMusicRequest struct {
 	CoverImageURL *string `json:"cover_image_url"`
 	PlayCount     *int    `json:"play_count"`
 	LikeCount     *int    `json:"like_count"`
+	SubmittedBy   string  `json:"submitted_by"`
+	IsTop100      *int    `json:"is_top100"`
 }
 
 // UpdateMusicRequest struct untuk request update music
@@ -49,6 +51,8 @@ type UpdateMusicRequest struct {
 	CoverImageURL *string `json:"cover_image_url"`
 	PlayCount     *int    `json:"play_count"`
 	LikeCount     *int    `json:"like_count"`
+	SubmittedBy   *string `json:"submitted_by"`
+	IsTop100      *int    `json:"is_top100"`
 }
 
 // CreateMusicHandler membuat music baru
@@ -89,6 +93,8 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	playCount := 0
 	likeCount := 0
 	explicit := false
+	isApproved := 0
+	isTop100 := 0
 
 	if req.PlayCount != nil {
 		playCount = *req.PlayCount
@@ -98,6 +104,21 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 	if req.Explicit != nil {
 		explicit = *req.Explicit
+	}
+	if req.IsTop100 != nil {
+		isTop100 = *req.IsTop100
+	}
+
+	// Validate submitted_by
+	submittedBy := "artist"
+	if req.SubmittedBy != "" {
+		if req.SubmittedBy != "artist" && req.SubmittedBy != "label" && req.SubmittedBy != "admin" {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "submitted_by harus salah satu dari: artist, label, admin",
+			})
+		}
+		submittedBy = req.SubmittedBy
 	}
 
 	// Buat music baru
@@ -119,6 +140,9 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 		CoverImageURL: req.CoverImageURL,
 		PlayCount:     &playCount,
 		LikeCount:     &likeCount,
+		SubmittedBy:   submittedBy,
+		IsApproved:    &isApproved,
+		IsTop100:      &isTop100,
 	}
 
 	if err := db.Create(&music).Error; err != nil {
@@ -150,6 +174,9 @@ func CreateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        search      query     string  false  "Search by title, artist, or album"
 // @Param        sort_by     query     string  false  "Sort field" default(created_at)
 // @Param        order       query     string  false  "Sort order" default(desc)
+// @Param        is_approved query     int     false  "Filter by approval status (0 or 1)"
+// @Param        is_top100   query     int     false  "Filter by top 100 status (0 or 1)"
+// @Param        submitted_by query    string  false  "Filter by submitted_by (artist, label, admin)"
 // @Success      200         {object}  map[string]interface{}
 // @Failure      401         {object}  map[string]interface{}
 // @Failure      500         {object}  map[string]interface{}
@@ -192,6 +219,21 @@ func GetMusicsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		if err == nil {
 			query = query.Where("explicit = ?", explicitBool)
 		}
+	}
+
+	// Filter by is_approved jika ada
+	if isApproved := c.Query("is_approved"); isApproved != "" {
+		query = query.Where("is_approved = ?", isApproved)
+	}
+
+	// Filter by is_top100 jika ada
+	if isTop100 := c.Query("is_top100"); isTop100 != "" {
+		query = query.Where("is_top100 = ?", isTop100)
+	}
+
+	// Filter by submitted_by jika ada
+	if submittedBy := c.Query("submitted_by"); submittedBy != "" {
+		query = query.Where("submitted_by = ?", submittedBy)
 	}
 
 	// Search by title, artist, atau album
@@ -386,6 +428,20 @@ func UpdateMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	if req.LikeCount != nil {
 		music.LikeCount = req.LikeCount
+	}
+
+	if req.SubmittedBy != nil {
+		if *req.SubmittedBy != "artist" && *req.SubmittedBy != "label" && *req.SubmittedBy != "admin" {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "submitted_by harus salah satu dari: artist, label, admin",
+			})
+		}
+		music.SubmittedBy = *req.SubmittedBy
+	}
+
+	if req.IsTop100 != nil {
+		music.IsTop100 = req.IsTop100
 	}
 
 	if err := db.Save(&music).Error; err != nil {
@@ -762,5 +818,79 @@ func GetTop5MostStreamedHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"message": "Top 5 most streamed music berhasil diambil",
 		"data":    musics,
 		"count":   len(musics),
+	})
+}
+
+// ApproveMusicRequest struct untuk request approve music
+type ApproveMusicRequest struct {
+	UserID int `json:"user_id" validate:"required"`
+}
+
+// ApproveMusicHandler mengapprove music
+// @Summary      Approve music
+// @Description  Approve a music track and set the approver
+// @Tags         Musics
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                  true  "Music ID"
+// @Param        request  body      ApproveMusicRequest  true  "Approve Music Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /musics/{id}/approve [put]
+func ApproveMusicHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+
+	var music models.Music
+	if err := db.First(&music, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Music tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data music",
+			"error":   err.Error(),
+		})
+	}
+
+	var req ApproveMusicRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal parse request body",
+			"error":   err.Error(),
+		})
+	}
+
+	if req.UserID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "user_id wajib diisi",
+		})
+	}
+
+	// Set is_approved = 1 dan approved_by = user_id
+	approved := 1
+	music.IsApproved = &approved
+	music.ApprovedBy = &req.UserID
+
+	if err := db.Save(&music).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengapprove music",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Music berhasil diapprove",
+		"data":    music,
 	})
 }
