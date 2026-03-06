@@ -15,6 +15,13 @@ definitions:
     required:
     - user_id
     type: object
+  handlers.ApproveMusicVideoRequest:
+    properties:
+      user_id:
+        type: integer
+    required:
+    - user_id
+    type: object
   handlers.CreateAppInfoRequest:
     properties:
       address:
@@ -591,6 +598,8 @@ definitions:
     type: object
   handlers.UpdateMusicVideoRequest:
     properties:
+      approved_by:
+        type: integer
       artist:
         type: string
       artist_id:
@@ -602,6 +611,10 @@ definitions:
         type: string
       genre:
         type: string
+      is_approved:
+        type: integer
+      is_highlight:
+        type: integer
       release_date:
         description: 'Format: "2006-01-02"'
         type: string
@@ -2702,6 +2715,14 @@ paths:
         in: query
         name: order
         type: string
+      - description: Filter by approval status (0, 1, or 2)
+        in: query
+        name: is_approved
+        type: integer
+      - description: Filter by highlight status (0 or 1)
+        in: query
+        name: is_highlight
+        type: integer
       produces:
       - application/json
       responses:
@@ -2888,6 +2909,56 @@ paths:
       security:
       - BearerAuth: []
       summary: Update music video
+      tags:
+      - MusicVideos
+  /music-videos/{id}/approve:
+    put:
+      consumes:
+      - application/json
+      description: Approve a music video by ID
+      parameters:
+      - description: Music Video ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Approve Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ApproveMusicVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Approve music video
       tags:
       - MusicVideos
   /music-videos/{id}/stream:

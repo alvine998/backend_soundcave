@@ -2893,6 +2893,18 @@ const docTemplate = `{
                         "description": "Sort order",
                         "name": "order",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by approval status (0, 1, or 2)",
+                        "name": "is_approved",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by highlight status (0 or 1)",
+                        "name": "is_highlight",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3204,6 +3216,81 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/music-videos/{id}/approve": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Approve a music video by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MusicVideos"
+                ],
+                "summary": "Approve music video",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Music Video ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Approve Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ApproveMusicVideoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -7004,6 +7091,17 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.ApproveMusicVideoRequest": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.CreateAppInfoRequest": {
             "type": "object",
             "required": [
@@ -7833,6 +7931,9 @@ const docTemplate = `{
         "handlers.UpdateMusicVideoRequest": {
             "type": "object",
             "properties": {
+                "approved_by": {
+                    "type": "integer"
+                },
                 "artist": {
                     "type": "string"
                 },
@@ -7848,6 +7949,12 @@ const docTemplate = `{
                 },
                 "genre": {
                     "type": "string"
+                },
+                "is_approved": {
+                    "type": "integer"
+                },
+                "is_highlight": {
+                    "type": "integer"
                 },
                 "release_date": {
                     "description": "Format: \"2006-01-02\"",

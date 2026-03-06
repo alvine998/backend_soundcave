@@ -242,6 +242,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	musicVideos.Post("/:id/stream", func(c *fiber.Ctx) error {
 		return handlers.IncrementMusicVideoStreamHandler(c, db)
 	})
+	musicVideos.Put("/:id/approve", func(c *fiber.Ctx) error {
+		return handlers.ApproveMusicVideoHandler(c, db)
+	})
 
 	// Notification CRUD routes (Protected)
 	notifications := api.Group("/notifications", middleware.AuthMiddleware)

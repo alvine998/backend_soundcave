@@ -32,6 +32,14 @@ type UpdateMusicVideoRequest struct {
 	Description *string `json:"description"`
 	VideoURL    *string `json:"video_url"`
 	Thumbnail   *string `json:"thumbnail"`
+	IsApproved  *int    `json:"is_approved"`
+	ApprovedBy  *int    `json:"approved_by"`
+	IsHighlight *int    `json:"is_highlight"`
+}
+
+// ApproveMusicVideoRequest struct untuk request approve music video
+type ApproveMusicVideoRequest struct {
+	UserID uint `json:"user_id" validate:"required"`
 }
 
 // CreateMusicVideoHandler membuat music_video baru
@@ -79,7 +87,11 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		Description: req.Description,
 		VideoURL:    req.VideoURL,
 		Thumbnail:   req.Thumbnail,
+		IsApproved:  new(int), // Default 0
+		IsHighlight: new(int), // Default 0
 	}
+	*musicVideo.IsApproved = 0
+	*musicVideo.IsHighlight = 0
 
 	if err := db.Create(&musicVideo).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -109,6 +121,8 @@ func CreateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Param        search     query     string  false  "Search by title or artist"
 // @Param        sort_by    query     string  false  "Sort field" default(created_at)
 // @Param        order      query     string  false  "Sort order" default(desc)
+// @Param        is_approved query    int     false  "Filter by approval status (0, 1, or 2)"
+// @Param        is_highlight query   int     false  "Filter by highlight status (0 or 1)"
 // @Success      200        {object}  map[string]interface{}
 // @Failure      401        {object}  map[string]interface{}
 // @Failure      500        {object}  map[string]interface{}
@@ -138,6 +152,16 @@ func GetMusicVideosHandler(c *fiber.Ctx, db *gorm.DB) error {
 	// Search by title atau artist
 	if search := c.Query("search"); search != "" {
 		query = query.Where("title LIKE ? OR artist LIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	// Filter by is_approved jika ada
+	if isApproved := c.Query("is_approved"); isApproved != "" {
+		query = query.Where("is_approved = ?", isApproved)
+	}
+
+	// Filter by is_highlight jika ada
+	if isHighlight := c.Query("is_highlight"); isHighlight != "" {
+		query = query.Where("is_highlight = ?", isHighlight)
 	}
 
 	// Sort by created_at
@@ -297,6 +321,18 @@ func UpdateMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
 		musicVideo.Thumbnail = req.Thumbnail
 	}
 
+	if req.IsApproved != nil {
+		musicVideo.IsApproved = req.IsApproved
+	}
+
+	if req.ApprovedBy != nil {
+		musicVideo.ApprovedBy = req.ApprovedBy
+	}
+
+	if req.IsHighlight != nil {
+		musicVideo.IsHighlight = req.IsHighlight
+	}
+
 	if err := db.Save(&musicVideo).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
@@ -407,6 +443,69 @@ func IncrementMusicVideoStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "Stream count berhasil diupdate",
+		"data":    musicVideo,
+	})
+}
+
+// ApproveMusicVideoHandler menyetujui music video
+// @Summary      Approve music video
+// @Description  Approve a music video by ID
+// @Tags         MusicVideos
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                     true  "Music Video ID"
+// @Param        request  body      ApproveMusicVideoRequest  true  "Approve Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      401      {object}  map[string]interface{}
+// @Failure      404      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /music-videos/{id}/approve [put]
+func ApproveMusicVideoHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+
+	var musicVideo models.MusicVideo
+	if err := db.First(&musicVideo, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Music video tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data music video",
+			"error":   err.Error(),
+		})
+	}
+
+	var req ApproveMusicVideoRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal parse request body",
+			"error":   err.Error(),
+		})
+	}
+
+	// Set is_approved = 1 dan approved_by = user_id
+	isApproved := 1
+	approvedBy := int(req.UserID)
+	musicVideo.IsApproved = &isApproved
+	musicVideo.ApprovedBy = &approvedBy
+
+	if err := db.Save(&musicVideo).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menyetujui music video",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Music video berhasil diapprove",
 		"data":    musicVideo,
 	})
 }
