@@ -7,9 +7,11 @@ import (
 	"backend_soundcave/config"
 	"backend_soundcave/database"
 	_ "backend_soundcave/docs" // Swagger docs
+	"backend_soundcave/handlers"
 	"backend_soundcave/routes"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -119,6 +121,13 @@ func main() {
 
 	// Routes
 	routes.SetupRoutes(app, db, firebaseApp)
+
+	// Initialize Socket.IO Server
+	io := handlers.InitSocketServer(db)
+
+	// Mount Socket.IO to Fiber using Adaptor
+	// This routes all /socket.io/* traffic to the Socket.IO server
+	app.All("/socket.io/*", adaptor.HTTPHandler(io.ServeHandler(nil)))
 
 	// Start server
 	port := os.Getenv("PORT")
