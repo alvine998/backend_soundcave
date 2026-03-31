@@ -17,7 +17,7 @@ const (
 // ArtistStream model untuk tracking live streaming artist
 type ArtistStream struct {
 	ID          uint           `json:"id" gorm:"primaryKey;autoIncrement"`
-	ArtistID    int            `json:"artist_id" gorm:"not null;index"`
+	ArtistID    int32          `json:"artist_id" gorm:"type:int;not null;index"`
 	Artist      Artist         `json:"artist" gorm:"foreignKey:ArtistID"`
 	Title       string         `json:"title" gorm:"size:255;not null"`
 	Description string         `json:"description" gorm:"type:text"`
