@@ -14,8 +14,10 @@ import (
 
 // StartStreamRequest struct untuk request start stream
 type StartStreamRequest struct {
-	Title       string `json:"title" validate:"required"`
-	Description string `json:"description"`
+	Title       string     `json:"title" validate:"required"`
+	Description string     `json:"description"`
+	Thumbnail   *string    `json:"thumbnail"`
+	ScheduledAt *time.Time `json:"scheduled_at"`
 }
 
 // generateRandomKey generates a random string for the stream key
@@ -85,16 +87,27 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		hlsBaseURL = "http://localhost:8080/hls"
 	}
 
+	// Determine status: if scheduled_at is provided and in the future, set as scheduled
+	status := models.StreamStatusLive
+	var startedAt time.Time
+	if req.ScheduledAt != nil && req.ScheduledAt.After(time.Now()) {
+		status = models.StreamStatusScheduled
+	} else {
+		startedAt = time.Now()
+	}
+
 	// Buat stream baru
 	stream := models.ArtistStream{
 		ArtistID:    int32(userID),
 		Title:       req.Title,
 		Description: req.Description,
+		Thumbnail:   req.Thumbnail,
+		ScheduledAt: req.ScheduledAt,
 		StreamKey:   streamKey,
 		IngestURL:   fmt.Sprintf("%s/%s", rtmpBaseURL, streamKey),
 		PlaybackURL: fmt.Sprintf("%s/%s.m3u8", hlsBaseURL, streamKey),
-		Status:      models.StreamStatusLive,
-		StartedAt:   time.Now(),
+		Status:      status,
+		StartedAt:   startedAt,
 	}
 
 	if err := db.Create(&stream).Error; err != nil {

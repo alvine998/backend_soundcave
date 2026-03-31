@@ -10,8 +10,9 @@ import (
 type ArtistStreamStatus string
 
 const (
-	StreamStatusLive  ArtistStreamStatus = "live"
-	StreamStatusEnded ArtistStreamStatus = "ended"
+	StreamStatusScheduled ArtistStreamStatus = "scheduled"
+	StreamStatusLive      ArtistStreamStatus = "live"
+	StreamStatusEnded     ArtistStreamStatus = "ended"
 )
 
 // ArtistStream model untuk tracking live streaming artist
@@ -21,10 +22,12 @@ type ArtistStream struct {
 	Artist      Artist         `json:"artist" gorm:"foreignKey:ArtistID"`
 	Title       string         `json:"title" gorm:"size:255;not null"`
 	Description string         `json:"description" gorm:"type:text"`
+	Thumbnail   *string        `json:"thumbnail" gorm:"size:500"`
+	ScheduledAt *time.Time     `json:"scheduled_at"`
 	StreamKey   string         `json:"stream_key" gorm:"size:100;uniqueIndex"`
 	IngestURL   string         `json:"ingest_url" gorm:"size:500"`
 	PlaybackURL string         `json:"playback_url" gorm:"size:500"`
-	Status      ArtistStreamStatus `json:"status" gorm:"type:enum('live','ended');default:'live'"`
+	Status      ArtistStreamStatus `json:"status" gorm:"type:enum('scheduled','live','ended');default:'scheduled'"`
 	ViewerCount int            `json:"viewer_count" gorm:"default:0"`
 	StartedAt   time.Time      `json:"started_at" gorm:"autoCreateTime"`
 	EndedAt     *time.Time     `json:"ended_at"`
