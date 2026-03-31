@@ -194,7 +194,7 @@ func GetActiveStreamsHandler(c *fiber.Ctx, db *gorm.DB) error {
 	query := db.Preload("Artist").Where("status = ?", models.StreamStatusLive).Order("viewer_count desc")
 
 	var total int64
-	query.Count(&total)
+	db.Model(&models.ArtistStream{}).Where("status = ?", models.StreamStatusLive).Count(&total)
 
 	if err := query.Offset(offset).Limit(limit).Find(&streams).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
