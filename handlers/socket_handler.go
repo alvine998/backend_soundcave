@@ -80,6 +80,45 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 			broadcastViewerCount(io, int32(streamID), db)
 		})
 
+		// Event: Send a live comment
+		client.On("send_comment", func(args ...any) {
+			if len(args) == 0 {
+				return
+			}
+
+			// Expecting a map with stream_id, username, message, and optionally profile_image
+			data, ok := args[0].(map[string]interface{})
+			if !ok {
+				return
+			}
+
+			streamIDStr := fmt.Sprintf("%v", data["stream_id"])
+			streamID, err := strconv.Atoi(streamIDStr)
+			if err != nil {
+				return
+			}
+
+			username, _ := data["username"].(string)
+			message, _ := data["message"].(string)
+			profileImage, _ := data["profile_image"].(string)
+
+			if message == "" {
+				return
+			}
+
+			roomName := fmt.Sprintf("stream:%d", streamID)
+
+			// Broadcast to everyone in the room (including sender)
+			io.To(socket.Room(roomName)).Emit("new_comment", map[string]any{
+				"stream_id":     streamID,
+				"username":      username,
+				"message":       message,
+				"profile_image": profileImage,
+			})
+
+			log.Printf("Comment in stream %d by %s: %s", streamID, username, message)
+		})
+
 		// Cleanup on disconnect
 		client.On("disconnecting", func(args ...any) {
 			if streamIDVal, ok := viewerMap.Load(client.Id()); ok {
