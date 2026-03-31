@@ -399,4 +399,19 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 		return handlers.IncrementCavelistSharesHandler(c, db)
 	})
 
+	// Artist Stream routes (Protected)
+	artistStreams := api.Group("/artist-streams", middleware.AuthMiddleware)
+	artistStreams.Post("/start", func(c *fiber.Ctx) error {
+		return handlers.StartStreamHandler(c, db)
+	})
+	artistStreams.Post("/end/:id", func(c *fiber.Ctx) error {
+		return handlers.EndStreamHandler(c, db)
+	})
+	artistStreams.Get("/active", func(c *fiber.Ctx) error {
+		return handlers.GetActiveStreamsHandler(c, db)
+	})
+	artistStreams.Get("/:id", func(c *fiber.Ctx) error {
+		return handlers.GetStreamDetailsHandler(c, db)
+	})
+
 }

@@ -445,6 +445,18 @@ definitions:
     - full_name
     - password
     type: object
+  handlers.StartStreamRequest:
+    properties:
+      description:
+        type: string
+      stream_url:
+        type: string
+      title:
+        type: string
+    required:
+    - stream_url
+    - title
+    type: object
   handlers.UpdateAppInfoRequest:
     properties:
       address:
@@ -1355,6 +1367,153 @@ paths:
       summary: Get latest app info
       tags:
       - AppInfo
+  /artist-streams/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific live stream
+      parameters:
+      - description: Stream ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get stream details
+      tags:
+      - ArtistStreams
+  /artist-streams/active:
+    get:
+      consumes:
+      - application/json
+      description: Get list of currently active live streams
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get active streams
+      tags:
+      - ArtistStreams
+  /artist-streams/end/{id}:
+    post:
+      consumes:
+      - application/json
+      description: End an active live stream for an artist
+      parameters:
+      - description: Stream ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: End live stream
+      tags:
+      - ArtistStreams
+  /artist-streams/start:
+    post:
+      consumes:
+      - application/json
+      description: Start a new live stream for an artist
+      parameters:
+      - description: Start Stream Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.StartStreamRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Start live stream
+      tags:
+      - ArtistStreams
   /artists:
     get:
       consumes:
