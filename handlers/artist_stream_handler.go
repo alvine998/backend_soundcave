@@ -2,6 +2,10 @@ package handlers
 
 import (
 	"backend_soundcave/models"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,7 +16,15 @@ import (
 type StartStreamRequest struct {
 	Title       string `json:"title" validate:"required"`
 	Description string `json:"description"`
-	StreamURL   string `json:"stream_url" validate:"required"`
+}
+
+// generateRandomKey generates a random string for the stream key
+func generateRandomKey(length int) string {
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(b)
 }
 
 // StartStreamHandler menangani artist mulai streaming
@@ -59,12 +71,28 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	// Generate unique stream key
+	streamKey := fmt.Sprintf("%d_%s", userID, generateRandomKey(8))
+
+	// Get base URLs from environment variables
+	rtmpBaseURL := os.Getenv("RTMP_SERVER_URL")
+	if rtmpBaseURL == "" {
+		rtmpBaseURL = "rtmp://localhost/live"
+	}
+
+	hlsBaseURL := os.Getenv("HLS_SERVER_URL")
+	if hlsBaseURL == "" {
+		hlsBaseURL = "http://localhost:8080/hls"
+	}
+
 	// Buat stream baru
 	stream := models.ArtistStream{
 		ArtistID:    userID,
 		Title:       req.Title,
 		Description: req.Description,
-		StreamURL:   req.StreamURL,
+		StreamKey:   streamKey,
+		IngestURL:   fmt.Sprintf("%s/%s", rtmpBaseURL, streamKey),
+		PlaybackURL: fmt.Sprintf("%s/%s.m3u8", hlsBaseURL, streamKey),
 		Status:      models.StreamStatusLive,
 		StartedAt:   time.Now(),
 	}

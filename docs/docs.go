@@ -7939,14 +7939,10 @@ const docTemplate = `{
         "handlers.StartStreamRequest": {
             "type": "object",
             "required": [
-                "stream_url",
                 "title"
             ],
             "properties": {
                 "description": {
-                    "type": "string"
-                },
-                "stream_url": {
                     "type": "string"
                 },
                 "title": {

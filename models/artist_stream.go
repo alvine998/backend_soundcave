@@ -21,7 +21,9 @@ type ArtistStream struct {
 	Artist      Artist         `json:"artist" gorm:"foreignKey:ArtistID"`
 	Title       string         `json:"title" gorm:"size:255;not null"`
 	Description string         `json:"description" gorm:"type:text"`
-	StreamURL   string         `json:"stream_url" gorm:"size:500"`
+	StreamKey   string         `json:"stream_key" gorm:"size:100;uniqueIndex"`
+	IngestURL   string         `json:"ingest_url" gorm:"size:500"`
+	PlaybackURL string         `json:"playback_url" gorm:"size:500"`
 	Status      ArtistStreamStatus `json:"status" gorm:"type:enum('live','ended');default:'live'"`
 	ViewerCount int            `json:"viewer_count" gorm:"default:0"`
 	StartedAt   time.Time      `json:"started_at" gorm:"autoCreateTime"`
