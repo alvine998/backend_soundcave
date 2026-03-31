@@ -87,7 +87,7 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	// Buat stream baru
 	stream := models.ArtistStream{
-		ArtistID:    userID,
+		ArtistID:    int(userID),
 		Title:       req.Title,
 		Description: req.Description,
 		StreamKey:   streamKey,
@@ -145,7 +145,7 @@ func EndStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	// Pastikan yang mengakhiri adalah pemilik stream
-	if stream.ArtistID != userID {
+	if stream.ArtistID != int(userID) {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"success": false,
 			"message": "Anda tidak memiliki akses untuk mengakhiri stream ini",
