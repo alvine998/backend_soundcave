@@ -154,10 +154,11 @@ func EndStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	// Update status
 	now := time.Now()
-	stream.Status = models.StreamStatusEnded
-	stream.EndedAt = &now
 
-	if err := db.Save(&stream).Error; err != nil {
+	if err := db.Model(&stream).Updates(map[string]interface{}{
+		"status":   models.StreamStatusEnded,
+		"ended_at": now,
+	}).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
 			"message": "Gagal mengakhiri stream",
