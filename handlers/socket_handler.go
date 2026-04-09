@@ -3,7 +3,10 @@ package handlers
 import (
 	"backend_soundcave/models"
 	"fmt"
+	stdio "io"
 	"log"
+	"os"
+	"os/exec"
 	"strconv"
 	"sync"
 
@@ -16,6 +19,12 @@ var (
 	// Map to track which stream each socket is currently watching
 	// socketID -> streamID
 	viewerMap = sync.Map{}
+
+	// Map to track active ffmpeg stream stdin pipes for web broadcasting
+	// streamKey -> io.WriteCloser (stdin of ffmpeg process)
+	ffmpegPipes = sync.Map{}
+	// socketID -> streamKey (to clean up if the broadcaster disconnects abruptly)
+	broadcasterMap = sync.Map{}
 )
 
 // InitSocketServer initializes the Socket.IO server
@@ -42,7 +51,7 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 
 			roomName := fmt.Sprintf("stream:%d", streamID)
 			client.Join(socket.Room(roomName))
-			
+
 			// Store current stream for cleanup on disconnect
 			viewerMap.Store(client.Id(), streamID)
 
@@ -130,9 +139,137 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 
 				// Broadcast new count
 				broadcastViewerCount(io, int32(streamID), db)
-				
+
 				viewerMap.Delete(client.Id())
 			}
+
+			// Clean up broadcaster ffmpeg pipe if they disconnect
+			if streamKeyVal, ok := broadcasterMap.Load(client.Id()); ok {
+				streamKey := streamKeyVal.(string)
+				if pipeVal, exists := ffmpegPipes.Load(streamKey); exists {
+					if stdin, ok := pipeVal.(stdio.WriteCloser); ok {
+						log.Printf("Closing ffmpeg pipe for disconnected broadcaster %s", streamKey)
+						stdin.Close()
+					}
+					ffmpegPipes.Delete(streamKey)
+				}
+				broadcasterMap.Delete(client.Id())
+			}
+		})
+
+		// Event: Start Web Broadcast
+		client.On("start_web_broadcast", func(args ...any) {
+			if len(args) == 0 {
+				return
+			}
+			data, ok := args[0].(map[string]interface{})
+			if !ok {
+				return
+			}
+			streamKey, _ := data["streamKey"].(string)
+			if streamKey == "" {
+				return
+			}
+
+			rtmpBaseURL := os.Getenv("RTMP_SERVER_URL")
+			if rtmpBaseURL == "" {
+				rtmpBaseURL = "rtmp://localhost/live"
+			}
+			destURL := fmt.Sprintf("%s/%s", rtmpBaseURL, streamKey)
+
+			cmd := exec.Command("ffmpeg",
+				"-i", "pipe:0", // Read from stdin
+				"-c:v", "libx264", // Re-encode video to H.264
+				"-preset", "veryfast", // Fast encoding for live streams
+				"-tune", "zerolatency",
+				"-b:v", "2000k",
+				"-c:a", "aac", // Re-encode audio to AAC expected by RTMP
+				"-ar", "44100",
+				"-b:a", "128k",
+				"-f", "flv", // Output to FLV container for RTMP
+				destURL,
+			)
+
+			stdin, err := cmd.StdinPipe()
+			if err != nil {
+				log.Printf("Failed to get ffmpeg stdin pipe: %v", err)
+				client.Emit("web_broadcast_error", map[string]string{"message": "Failed to start ffmpeg pipe"})
+				return
+			}
+
+			// Capture ffmpeg output for debugging
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+
+			if err := cmd.Start(); err != nil {
+				log.Printf("Failed to start ffmpeg: %v", err)
+				client.Emit("web_broadcast_error", map[string]string{"message": "Failed to start ffmpeg process"})
+				return
+			}
+
+			log.Printf("Started ffmpeg processing for stream %s to %s", streamKey, destURL)
+			ffmpegPipes.Store(streamKey, stdin)
+			broadcasterMap.Store(client.Id(), streamKey)
+
+			// Notify client we're ready
+			client.Emit("web_broadcast_ready", map[string]string{"streamKey": streamKey})
+
+			// Goroutine to wait for ffmpeg to exit
+			go func() {
+				err := cmd.Wait()
+				log.Printf("ffmpeg for stream %s exited with error: %v", streamKey, err)
+				ffmpegPipes.Delete(streamKey)
+			}()
+		})
+
+		// Event: Receive Video Chunk
+		client.On("web_broadcast_chunk", func(args ...any) {
+			if len(args) == 0 {
+				return
+			}
+			data, ok := args[0].(map[string]interface{})
+			if !ok {
+				return
+			}
+			streamKey, _ := data["streamKey"].(string)
+			chunk, _ := data["chunk"].([]byte)
+
+			if streamKey == "" || len(chunk) == 0 {
+				return
+			}
+
+			if pipeVal, exists := ffmpegPipes.Load(streamKey); exists {
+				if stdin, ok := pipeVal.(stdio.WriteCloser); ok {
+					_, err := stdin.Write(chunk)
+					if err != nil {
+						log.Printf("Error writing chunk to ffmpeg for %s: %v", streamKey, err)
+					}
+				}
+			}
+		})
+
+		// Event: Stop Web Broadcast
+		client.On("stop_web_broadcast", func(args ...any) {
+			if len(args) == 0 {
+				return
+			}
+			data, ok := args[0].(map[string]interface{})
+			if !ok {
+				return
+			}
+			streamKey, _ := data["streamKey"].(string)
+			if streamKey == "" {
+				return
+			}
+
+			if pipeVal, exists := ffmpegPipes.Load(streamKey); exists {
+				if stdin, ok := pipeVal.(stdio.WriteCloser); ok {
+					log.Printf("Stopping web broadcast, closing pipe for %s", streamKey)
+					stdin.Close()
+				}
+				ffmpegPipes.Delete(streamKey)
+			}
+			broadcasterMap.Delete(client.Id())
 		})
 	})
 
@@ -146,7 +283,7 @@ func updateViewerCount(db *gorm.DB, streamID int32, delta int) {
 	// This prevents race conditions
 	err := db.Model(&models.ArtistStream{}).Where("id = ?", streamID).
 		UpdateColumn("viewer_count", gorm.Expr("viewer_count + ?", delta)).Error
-	
+
 	if err != nil {
 		log.Printf("Error updating viewer count for stream %d: %v", streamID, err)
 	}
