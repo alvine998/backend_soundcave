@@ -204,7 +204,7 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 
 			if err := cmd.Start(); err != nil {
 				log.Printf("Failed to start ffmpeg: %v", err)
-				client.Emit("web_broadcast_error", map[string]string{"message": "Failed to start ffmpeg process"})
+				client.Emit("web_broadcast_error", map[string]string{"message": "Failed to start ffmpeg process: " + err.Error()})
 				return
 			}
 
