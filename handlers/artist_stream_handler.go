@@ -46,12 +46,36 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 	userID := c.Locals("user_id").(uint)
 	role := c.Locals("role").(string)
 
-	// Validasi role - hanya independent atau label yang bisa stream
-	if role != string(models.RoleIndependent) && role != string(models.RoleLabel) {
+	// Validasi role - independent, label, atau admin yang bisa stream
+	if role != string(models.RoleIndependent) && role != string(models.RoleLabel) && role != string(models.RoleAdmin) {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"success": false,
-			"message": "Hanya artist atau label yang dapat memulai live stream",
+			"message": "Hanya artist, label, atau admin yang dapat memulai live stream",
 		})
+	}
+
+	// Jika role adalah admin, pastikan ada record di tabel artists agar stream metadata (nama, dll) tersedia
+	if role == string(models.RoleAdmin) {
+		var artist models.Artist
+		if err := db.Where("id = ?", userID).First(&artist).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				// Ambil data user untuk buat artist record
+				var user models.User
+				if err := db.First(&user, userID).Error; err == nil {
+					artist = models.Artist{
+						ID:           userID, // Kita samakan ID-nya sesuai konvensi codebase ini
+						Name:         user.FullName,
+						Email:        user.Email,
+						Phone:        user.Phone,
+						ProfileImage: user.ProfileImage,
+						Bio:          "Official Administrator",
+					}
+					if err := db.Create(&artist).Error; err != nil {
+						fmt.Printf("Gagal membuat record artist untuk admin %d: %v\n", userID, err)
+					}
+				}
+			}
+		}
 	}
 
 	var req StartStreamRequest
@@ -157,7 +181,8 @@ func EndStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Pastikan yang mengakhiri adalah pemilik stream
+	// Pastikan yang mengakhiri adalah pemilik stream atau admin (jika ingin admin bisa end data siapa saja)
+	// Kita izinkan pemilik stream untuk end. Untuk admin, mereka bisa broadcast sendiri (dan thus end milik mereka).
 	if stream.ArtistID != int32(userID) {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"success": false,
