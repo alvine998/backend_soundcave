@@ -178,6 +178,7 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 			destURL := fmt.Sprintf("%s/%s", rtmpBaseURL, streamKey)
 
 			cmd := exec.Command("ffmpeg",
+                "-f", "webm",    // Tell ffmpeg the incoming pipe is WebM format
 				"-i", "pipe:0", // Read from stdin
 				"-c:v", "libx264", // Re-encode video to H.264
 				"-preset", "veryfast", // Fast encoding for live streams
