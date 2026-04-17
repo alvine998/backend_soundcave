@@ -264,9 +264,18 @@ func EndStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	var user models.User
+	if err := db.First(&user, userID).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data user",
+			"error":   err.Error(),
+		})
+	}
+
 	// Pastikan yang mengakhiri adalah pemilik stream atau admin (jika ingin admin bisa end data siapa saja)
 	// Kita izinkan pemilik stream untuk end. Untuk admin, mereka bisa broadcast sendiri (dan thus end milik mereka).
-	if stream.ArtistID != int32(userID) {
+	if stream.ArtistID != int32(userID) || user.Role != models.RoleAdmin {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"success": false,
 			"message": "Anda tidak memiliki akses untuk mengakhiri stream ini",
