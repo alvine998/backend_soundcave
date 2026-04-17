@@ -54,30 +54,6 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Jika role adalah admin, pastikan ada record di tabel artists agar stream metadata (nama, dll) tersedia
-	if role == string(models.RoleAdmin) {
-		var artist models.Artist
-		if err := db.Where("id = ?", userID).First(&artist).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				// Ambil data user untuk buat artist record
-				var user models.User
-				if err := db.First(&user, userID).Error; err == nil {
-					artist = models.Artist{
-						ID:           userID, // Kita samakan ID-nya sesuai konvensi codebase ini
-						Name:         user.FullName,
-						Email:        user.Email,
-						Phone:        user.Phone,
-						ProfileImage: user.ProfileImage,
-						Bio:          "Official Administrator",
-					}
-					if err := db.Create(&artist).Error; err != nil {
-						fmt.Printf("Gagal membuat record artist untuk admin %d: %v\n", userID, err)
-					}
-				}
-			}
-		}
-	}
-
 	var req StartStreamRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -87,9 +63,90 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
+	// Get or create artist record
+	var artist models.Artist
+	var artistID uint
+
+	// For independent and label roles, find artist by ref_user_id
+	if role == string(models.RoleIndependent) || role == string(models.RoleLabel) {
+		if err := db.Where("ref_user_id = ?", userID).First(&artist).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				// Artist belum ada, buat baru
+				var user models.User
+				if err := db.First(&user, userID).Error; err != nil {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"success": false,
+						"message": "Gagal mengambil data user",
+						"error":   err.Error(),
+					})
+				}
+
+				artist = models.Artist{
+					RefUserID:    &userID,
+					Name:         user.FullName,
+					Email:        user.Email,
+					Phone:        user.Phone,
+					ProfileImage: user.ProfileImage,
+					Bio:          "Independent Artist",
+				}
+				if err := db.Create(&artist).Error; err != nil {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"success": false,
+						"message": "Gagal membuat record artist",
+						"error":   err.Error(),
+					})
+				}
+			} else {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"success": false,
+					"message": "Gagal mengambil data artist",
+					"error":   err.Error(),
+				})
+			}
+		}
+		artistID = artist.ID
+	} else if role == string(models.RoleAdmin) {
+		// For admin, create artist with ref_user_id = userID
+		if err := db.Where("ref_user_id = ?", userID).First(&artist).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				var user models.User
+				if err := db.First(&user, userID).Error; err != nil {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"success": false,
+						"message": "Gagal mengambil data user",
+						"error":   err.Error(),
+					})
+				}
+
+				artist = models.Artist{
+					RefUserID:    &userID,
+					Name:         user.FullName,
+					Email:        user.Email,
+					Phone:        user.Phone,
+					ProfileImage: user.ProfileImage,
+					Bio:          "Official Administrator",
+				}
+				if err := db.Create(&artist).Error; err != nil {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"success": false,
+						"message": "Gagal membuat record artist",
+						"error":   err.Error(),
+					})
+				}
+			} else {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"success": false,
+					"message": "Gagal mengambil data artist",
+					"error":   err.Error(),
+				})
+			}
+		}
+		artistID = artist.ID
+	}
+
 	// Cek apakah ada stream yang masih live
 	var activeStream models.ArtistStream
-	if err := db.Where("artist_id = ? AND status = ?", userID, models.StreamStatusLive).First(&activeStream).Error; err == nil {
+	if err := db.Where("artist_id = ? AND status = ?", artistID, models.StreamStatusLive).First(&activeStream).Error; err == nil {
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"success": false,
 			"message": "Anda sudah memiliki stream yang sedang berlangsung",
@@ -120,9 +177,9 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		startedAt = time.Now()
 	}
 
-	// Buat stream baru
+	// Buat stream baru dengan artist_id yang benar
 	stream := models.ArtistStream{
-		ArtistID:    int32(userID),
+		ArtistID:    int32(artistID),
 		Title:       req.Title,
 		Description: req.Description,
 		Thumbnail:   req.Thumbnail,
