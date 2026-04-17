@@ -290,3 +290,95 @@ func GetStreamDetailsHandler(c *fiber.Ctx, db *gorm.DB) error {
 		"data":    stream,
 	})
 }
+
+// GetArtistStreamHistoryHandler mendapatkan history streaming artist dengan pagination dan filter
+// @Summary      Get artist stream history
+// @Description  Get history of artist streams with pagination and filters for status and artist
+// @Tags         ArtistStreams
+// @Accept       json
+// @Produce      json
+// @Param        page       query     int     false  "Page number" default(1)
+// @Param        limit      query     int     false  "Items per page" default(10)
+// @Param        status     query     string  false  "Stream status filter (scheduled, live, ended)"
+// @Param        artist_id  query     int     false  "Artist ID filter"
+// @Success      200        {object}  map[string]interface{}
+// @Failure      400        {object}  map[string]interface{}
+// @Failure      500        {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /artist-streams/history [get]
+func GetArtistStreamHistoryHandler(c *fiber.Ctx, db *gorm.DB) error {
+	// Get pagination parameters
+	page := c.QueryInt("page", 1)
+	limit := c.QueryInt("limit", 10)
+	status := c.Query("status")
+	artistID := c.QueryInt("artist_id", 0)
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	// Build query
+	query := db.Preload("Artist").Order("created_at DESC")
+
+	// Filter by status if provided
+	if status != "" {
+		validStatuses := []string{string(models.StreamStatusScheduled), string(models.StreamStatusLive), string(models.StreamStatusEnded)}
+		statusFound := false
+		for _, s := range validStatuses {
+			if s == status {
+				statusFound = true
+				break
+			}
+		}
+		if !statusFound {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"success": false,
+				"message": "Invalid status. Must be one of: scheduled, live, ended",
+			})
+		}
+		query = query.Where("status = ?", status)
+	}
+
+	// Filter by artist_id if provided
+	if artistID > 0 {
+		query = query.Where("artist_id = ?", artistID)
+	}
+
+	// Get total count
+	var total int64
+	if err := query.Model(&models.ArtistStream{}).Count(&total).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Failed to count streams",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get paginated results
+	var streams []models.ArtistStream
+	if err := query.Offset(offset).Limit(limit).Find(&streams).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Failed to retrieve stream history",
+			"error":   err.Error(),
+		})
+	}
+
+	totalPages := (int(total) + limit - 1) / limit
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"data":    streams,
+		"pagination": fiber.Map{
+			"page":        page,
+			"limit":       limit,
+			"total":       total,
+			"total_pages": totalPages,
+		},
+	})
+}

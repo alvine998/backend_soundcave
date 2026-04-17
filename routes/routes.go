@@ -410,6 +410,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	artistStreams.Get("/active", func(c *fiber.Ctx) error {
 		return handlers.GetActiveStreamsHandler(c, db)
 	})
+	artistStreams.Get("/history", func(c *fiber.Ctx) error {
+		return handlers.GetArtistStreamHistoryHandler(c, db)
+	})
 	artistStreams.Get("/:id", func(c *fiber.Ctx) error {
 		return handlers.GetStreamDetailsHandler(c, db)
 	})
