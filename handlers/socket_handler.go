@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/zishang520/socket.io/v2/socket"
 	"gorm.io/gorm"
@@ -155,6 +156,9 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 					ffmpegPipes.Delete(streamKey)
 				}
 				broadcasterMap.Delete(client.Id())
+				
+				// End the stream in DB and notify viewers
+				endStream(db, io, streamKey)
 			}
 		})
 
@@ -221,6 +225,9 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 				err := cmd.Wait()
 				log.Printf("ffmpeg for stream %s exited with error: %v", streamKey, err)
 				ffmpegPipes.Delete(streamKey)
+				
+				// If ffmpeg exits, the stream is effectively over
+				endStream(db, io, streamKey)
 			}()
 		})
 
@@ -298,6 +305,9 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 				}
 				ffmpegPipes.Delete(streamKey)
 			}
+			
+			// End the stream and notify viewers
+			endStream(db, io, streamKey)
 
 			// Clean up broadcasterMap for this streamKey
 			broadcasterMap.Range(func(key, value any) bool {
@@ -343,4 +353,35 @@ func broadcastViewerCount(io *socket.Server, streamID int32, db *gorm.DB) {
 		"stream_id":    streamID,
 		"viewer_count": stream.ViewerCount,
 	})
+}
+
+// endStream updates the stream status to ended in DB and notifies all viewers
+func endStream(db *gorm.DB, io *socket.Server, streamKey string) {
+	var stream models.ArtistStream
+	// Find the stream by key and make sure it's not already ended
+	if err := db.Where("stream_key = ? AND status != ?", streamKey, models.StreamStatusEnded).First(&stream).Error; err != nil {
+		return
+	}
+
+	// Update status in DB
+	now := time.Now()
+	err := db.Model(&stream).Updates(map[string]interface{}{
+		"status":   models.StreamStatusEnded,
+		"ended_at": &now,
+	}).Error
+
+	if err != nil {
+		log.Printf("Error updating stream %d to ended: %v", stream.ID, err)
+		return
+	}
+
+	// Broadcast stream_ended event to all in this stream's room
+	roomName := fmt.Sprintf("stream:%d", stream.ID)
+	io.To(socket.Room(roomName)).Emit("stream_ended", map[string]any{
+		"stream_id": stream.ID,
+		"status":    "ended",
+		"message":   "The broadcast has ended.",
+	})
+
+	log.Printf("Broadcasting stream_ended for stream %d", stream.ID)
 }
