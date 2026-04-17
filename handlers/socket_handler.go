@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"backend_soundcave/models"
+	"backend_soundcave/utils"
 	"fmt"
 	stdio "io"
 	"log"
@@ -259,7 +260,34 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 				return
 			}
 			streamKey, _ := data["streamKey"].(string)
+			token, _ := data["token"].(string)
+
 			if streamKey == "" {
+				return
+			}
+
+			// Authorization check
+			isAuthorized := false
+
+			// 1. Check if the current client is the broadcaster of this stream
+			if ownedKeyVal, ok := broadcasterMap.Load(client.Id()); ok {
+				if ownedKey, ok := ownedKeyVal.(string); ok && ownedKey == streamKey {
+					isAuthorized = true
+				}
+			}
+
+			// 2. If not the broadcaster, check if the token provided is an admin token
+			if !isAuthorized && token != "" {
+				claims, err := utils.ValidateToken(token)
+				if err == nil && claims.Role == string(models.RoleAdmin) {
+					isAuthorized = true
+					log.Printf("Admin %s (ID: %d) is stopping stream %s", claims.Email, claims.UserID, streamKey)
+				}
+			}
+
+			if !isAuthorized {
+				log.Printf("Unauthorized attempt to stop stream %s by client %s", streamKey, client.Id())
+				client.Emit("web_broadcast_error", map[string]string{"message": "Unauthorized to stop this broadcast"})
 				return
 			}
 
@@ -270,7 +298,15 @@ func InitSocketServer(db *gorm.DB) *socket.Server {
 				}
 				ffmpegPipes.Delete(streamKey)
 			}
-			broadcasterMap.Delete(client.Id())
+
+			// Clean up broadcasterMap for this streamKey
+			broadcasterMap.Range(func(key, value any) bool {
+				if valStr, ok := value.(string); ok && valStr == streamKey {
+					broadcasterMap.Delete(key)
+					return false // stop iteration
+				}
+				return true
+			})
 		})
 	})
 
