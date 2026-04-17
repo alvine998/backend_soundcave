@@ -67,10 +67,14 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var artist models.Artist
 	var artistID uint
 
+	fmt.Printf("DEBUG: userID=%d, role=%s\n", userID, role)
+
 	// For independent and label roles, find artist by ref_user_id
 	if role == string(models.RoleIndependent) || role == string(models.RoleLabel) {
+		fmt.Printf("DEBUG: Looking for artist with ref_user_id=%d\n", userID)
 		if err := db.Where("ref_user_id = ?", userID).First(&artist).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
+				fmt.Printf("DEBUG: Artist not found, creating new one\n")
 				// Artist belum ada, buat baru
 				var user models.User
 				if err := db.First(&user, userID).Error; err != nil {
@@ -96,6 +100,7 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 						"error":   err.Error(),
 					})
 				}
+				fmt.Printf("DEBUG: New artist created with ID=%d\n", artist.ID)
 			} else {
 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 					"success": false,
@@ -105,10 +110,13 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 			}
 		}
 		artistID = artist.ID
+		fmt.Printf("DEBUG: Set artistID=%d for independent/label role\n", artistID)
 	} else if role == string(models.RoleAdmin) {
 		// For admin, create artist with ref_user_id = userID
+		fmt.Printf("DEBUG: Looking for admin artist with ref_user_id=%d\n", userID)
 		if err := db.Where("ref_user_id = ?", userID).First(&artist).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
+				fmt.Printf("DEBUG: Admin artist not found, creating new one\n")
 				var user models.User
 				if err := db.First(&user, userID).Error; err != nil {
 					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -133,6 +141,7 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 						"error":   err.Error(),
 					})
 				}
+				fmt.Printf("DEBUG: New admin artist created with ID=%d\n", artist.ID)
 			} else {
 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 					"success": false,
@@ -142,6 +151,23 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 			}
 		}
 		artistID = artist.ID
+		fmt.Printf("DEBUG: Set artistID=%d for admin role\n", artistID)
+	}
+
+	// Validate artist ID was set
+	if artistID == 0 {
+		fmt.Printf("DEBUG: artistID is 0! role=%s, checking conditions\n", role)
+		fmt.Printf("DEBUG: RoleIndependent=%s, RoleLabel=%s, RoleAdmin=%s\n",
+			string(models.RoleIndependent), string(models.RoleLabel), string(models.RoleAdmin))
+
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mendapatkan ID artist. Role tidak dikenali atau tidak memiliki akses untuk streaming.",
+			"debug": fiber.Map{
+				"role":   role,
+				"userID": userID,
+			},
+		})
 	}
 
 	// Cek apakah ada stream yang masih live
