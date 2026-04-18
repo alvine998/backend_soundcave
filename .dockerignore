@@ -49,3 +49,9 @@ README.md
 # Logs
 *.log
 
+# Caches
+.cache/
+/root/.cache/
+go-build/
+pkg/
+bin/
