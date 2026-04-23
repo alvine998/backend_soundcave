@@ -24,6 +24,15 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	// Swagger documentation
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
+	// SRS Webhook routes - registered directly on app to bypass all middleware
+	// These are called by SRS media server, no auth required
+	app.Post("/api/srs/on_publish", func(c *fiber.Ctx) error {
+		return handlers.OnPublishHandler(c, db)
+	})
+	app.Post("/api/srs/on_unpublish", func(c *fiber.Ctx) error {
+		return handlers.OnUnpublishHandler(c, db)
+	})
+
 	// API routes
 	api := app.Group("/api")
 
@@ -415,15 +424,6 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	})
 	artistStreams.Get("/:id", func(c *fiber.Ctx) error {
 		return handlers.GetStreamDetailsHandler(c, db)
-	})
-
-	// SRS Webhook routes (Public - called by SRS media server, no auth)
-	srs := api.Group("/srs")
-	srs.Post("/on_publish", func(c *fiber.Ctx) error {
-		return handlers.OnPublishHandler(c, db)
-	})
-	srs.Post("/on_unpublish", func(c *fiber.Ctx) error {
-		return handlers.OnUnpublishHandler(c, db)
 	})
 
 }
