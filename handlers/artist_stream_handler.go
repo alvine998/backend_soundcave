@@ -14,10 +14,11 @@ import (
 
 // StartStreamRequest struct untuk request start stream
 type StartStreamRequest struct {
-	Title       string     `json:"title" validate:"required"`
-	Description string     `json:"description"`
-	Thumbnail   *string    `json:"thumbnail"`
-	ScheduledAt *time.Time `json:"scheduled_at"`
+	Title       string                `json:"title" validate:"required"`
+	Description string                `json:"description"`
+	Thumbnail   *string               `json:"thumbnail"`
+	ScheduledAt *time.Time            `json:"scheduled_at"`
+	LiveFrom    models.StreamLiveFrom `json:"live_from"` // "web" or "phone"
 }
 
 // generateRandomKey generates a random string for the stream key
@@ -211,6 +212,11 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 	}
 
 	// Buat stream baru dengan artist_id yang benar
+	liveFrom := req.LiveFrom
+	if liveFrom != models.StreamLiveFromWeb && liveFrom != models.StreamLiveFromPhone {
+		liveFrom = models.StreamLiveFromWeb // default to web
+	}
+
 	stream := models.ArtistStream{
 		ArtistID:    int32(artistID),
 		Title:       req.Title,
@@ -222,6 +228,7 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		WebRTCURL:   fmt.Sprintf("%s/?app=live&stream=%s", srsWebRTCBaseURL, streamKey),
 		PlaybackURL: fmt.Sprintf("%s/%s.m3u8", hlsBaseURL, streamKey),
 		Status:      status,
+		LiveFrom:    liveFrom,
 	}
 
 	if err := db.Create(&stream).Error; err != nil {

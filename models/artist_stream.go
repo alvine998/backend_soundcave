@@ -16,6 +16,14 @@ const (
 	StreamStatusEnded     ArtistStreamStatus = "ended"     // SRS unpublished or manually ended
 )
 
+// StreamLiveFrom platform used to broadcast the stream
+type StreamLiveFrom string
+
+const (
+	StreamLiveFromWeb   StreamLiveFrom = "web"
+	StreamLiveFromPhone StreamLiveFrom = "phone"
+)
+
 // ArtistStream model untuk tracking live streaming artist
 type ArtistStream struct {
 	ID          uint               `json:"id" gorm:"primaryKey;autoIncrement"`
@@ -30,6 +38,7 @@ type ArtistStream struct {
 	WebRTCURL   string             `json:"webrtc_url" gorm:"size:500"`   // SRS WHIP endpoint for WebRTC push
 	PlaybackURL string             `json:"playback_url" gorm:"size:500"` // HLS playback URL
 	Status      ArtistStreamStatus `json:"status" gorm:"type:enum('pending','scheduled','live','ended');default:'pending'"`
+	LiveFrom    StreamLiveFrom     `json:"live_from" gorm:"type:enum('web','phone');default:'web'"`
 	ViewerCount int                `json:"viewer_count" gorm:"default:0"`
 	StartedAt   *time.Time         `json:"started_at"` // set when SRS confirms on_publish
 	EndedAt     *time.Time         `json:"ended_at"`
