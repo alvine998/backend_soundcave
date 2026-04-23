@@ -16,6 +16,5 @@ type Image struct {
 	BucketPath  string         `json:"bucket_path" gorm:"size:500"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index" swag:"-"`
 }
-

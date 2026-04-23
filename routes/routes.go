@@ -416,14 +416,14 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	artistStreams.Get("/:id", func(c *fiber.Ctx) error {
 		return handlers.GetStreamDetailsHandler(c, db)
 	})
-	
-	// RTMP Webhook routes (Public - called by Nginx)
-	rtmp := api.Group("/rtmp")
-	rtmp.Post("/on-publish", func(c *fiber.Ctx) error {
+
+	// SRS Webhook routes (Public - called by SRS media server, no auth)
+	srs := api.Group("/srs")
+	srs.Post("/on_publish", func(c *fiber.Ctx) error {
 		return handlers.OnPublishHandler(c, db)
 	})
-	rtmp.Post("/on-publish-done", func(c *fiber.Ctx) error {
-		return handlers.OnPublishDoneHandler(c, db)
+	srs.Post("/on_unpublish", func(c *fiber.Ctx) error {
+		return handlers.OnUnpublishHandler(c, db)
 	})
 
 }

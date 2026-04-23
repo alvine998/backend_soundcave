@@ -14,7 +14,7 @@ type PlaylistSong struct {
 	Position   int            `json:"position" gorm:"not null;default:0"` // Urutan lagu dalam playlist
 	CreatedAt  time.Time      `json:"created_at"`
 	UpdatedAt  time.Time      `json:"updated_at"`
-	DeletedAt  gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	DeletedAt  gorm.DeletedAt `json:"deleted_at" gorm:"index" swag:"-"`
 
 	// Relations (tanpa foreign key constraint untuk menghindari error migration)
 	Playlist Playlist `json:"playlist,omitempty" gorm:"foreignKey:PlaylistID;constraint:-"`

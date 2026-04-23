@@ -31,7 +31,7 @@ type Cavelist struct {
 	PublishedAt     *time.Time     `json:"published_at" gorm:"type:datetime"`
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
-	DeletedAt       gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	DeletedAt       gorm.DeletedAt `json:"deleted_at" gorm:"index" swag:"-"`
 }
 
 // TableName mengembalikan nama tabel

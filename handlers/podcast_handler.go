@@ -189,7 +189,7 @@ func GetPodcastsHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Podcast ID"
-// @Success      200  {object}  models.Podcast
+// @Success      200  {object}  map[string]interface{}
 // @Failure      401  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}
 // @Failure      500  {object}  map[string]interface{}
@@ -227,7 +227,7 @@ func GetPodcastHandler(c *fiber.Ctx, db *gorm.DB) error {
 // @Produce      json
 // @Param        id       path      int                 true  "Podcast ID"
 // @Param        request  body      UpdatePodcastRequest  true  "Update Podcast Request"
-// @Success      200      {object}  models.Podcast
+// @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  map[string]interface{}
 // @Failure      401      {object}  map[string]interface{}
 // @Failure      404      {object}  map[string]interface{}

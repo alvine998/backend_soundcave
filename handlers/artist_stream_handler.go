@@ -170,12 +170,15 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	// Cek apakah ada stream yang masih live
+	// Cek apakah ada stream yang masih pending atau live
 	var activeStream models.ArtistStream
-	if err := db.Where("artist_id = ? AND status = ?", artistID, models.StreamStatusLive).First(&activeStream).Error; err == nil {
+	if err := db.Where("artist_id = ? AND status IN ?", artistID, []string{
+		string(models.StreamStatusPending),
+		string(models.StreamStatusLive),
+	}).First(&activeStream).Error; err == nil {
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"success": false,
-			"message": "Anda sudah memiliki stream yang sedang berlangsung",
+			"message": "Anda sudah memiliki stream yang sedang berlangsung atau menunggu koneksi",
 			"data":    activeStream,
 		})
 	}
@@ -194,13 +197,17 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		hlsBaseURL = "http://localhost:8080/hls"
 	}
 
-	// Determine status: if scheduled_at is provided and in the future, set as scheduled
-	status := models.StreamStatusLive
-	var startedAt time.Time
+	srsWebRTCBaseURL := os.Getenv("SRS_WEBRTC_URL")
+	if srsWebRTCBaseURL == "" {
+		srsWebRTCBaseURL = "http://localhost:1985/rtc/v1/whip"
+	}
+
+	// Determine status:
+	// - Future scheduled_at → scheduled (will transition to pending when ready)
+	// - Otherwise → pending (waiting for SRS on_publish confirmation)
+	status := models.StreamStatusPending
 	if req.ScheduledAt != nil && req.ScheduledAt.After(time.Now()) {
 		status = models.StreamStatusScheduled
-	} else {
-		startedAt = time.Now()
 	}
 
 	// Buat stream baru dengan artist_id yang benar
@@ -212,9 +219,9 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 		ScheduledAt: req.ScheduledAt,
 		StreamKey:   streamKey,
 		IngestURL:   fmt.Sprintf("%s/%s", rtmpBaseURL, streamKey),
+		WebRTCURL:   fmt.Sprintf("%s/?app=live&stream=%s", srsWebRTCBaseURL, streamKey),
 		PlaybackURL: fmt.Sprintf("%s/%s.m3u8", hlsBaseURL, streamKey),
 		Status:      status,
-		StartedAt:   startedAt,
 	}
 
 	if err := db.Create(&stream).Error; err != nil {
@@ -227,7 +234,7 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": true,
-		"message": "Stream berhasil dimulai",
+		"message": "Stream berhasil dibuat. Mulai streaming ke webrtc_url untuk go live.",
 		"data":    stream,
 	})
 }

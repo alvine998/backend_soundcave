@@ -953,6 +953,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/artist-streams/history": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get history of artist streams with pagination and filters for status and artist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ArtistStreams"
+                ],
+                "summary": "Get artist stream history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Stream status filter (scheduled, live, ended)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Artist ID filter",
+                        "name": "artist_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/artist-streams/start": {
             "post": {
                 "security": [
@@ -6211,7 +6282,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Podcast"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "401": {
@@ -6276,7 +6348,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Podcast"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -6468,6 +6541,111 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/srs/on_publish": {
+            "post": {
+                "description": "Called by SRS when a stream publisher connects. Marks stream as live.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SRS Webhooks"
+                ],
+                "summary": "SRS on_publish callback",
+                "parameters": [
+                    {
+                        "description": "SRS callback payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.srsCallbackBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/srs/on_unpublish": {
+            "post": {
+                "description": "Called by SRS when a stream publisher disconnects. Marks stream as ended.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SRS Webhooks"
+                ],
+                "summary": "SRS on_unpublish callback",
+                "parameters": [
+                    {
+                        "description": "SRS callback payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.srsCallbackBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -7298,18 +7476,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
         "handlers.ApproveMusicRequest": {
             "type": "object",
             "required": [
@@ -7945,6 +8111,12 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "scheduled_at": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 }
@@ -8418,53 +8590,30 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Podcast": {
+        "handlers.srsCallbackBody": {
             "type": "object",
             "properties": {
-                "category": {
+                "action": {
                     "type": "string"
                 },
-                "created_at": {
+                "app": {
                     "type": "string"
                 },
-                "deleted_at": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
+                "client_id": {
                     "type": "string"
                 },
-                "duration": {
-                    "description": "Format: MM:SS atau HH:MM:SS",
+                "ip": {
                     "type": "string"
                 },
-                "episode_number": {
-                    "type": "integer"
-                },
-                "host": {
+                "param": {
+                    "description": "query params, e.g. \"?secret=xxx\"",
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "release_date": {
+                "stream": {
+                    "description": "stream key",
                     "type": "string"
                 },
-                "season": {
-                    "type": "integer"
-                },
-                "thumbnail": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "total_stream": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "video_url": {
+                "vhost": {
                     "type": "string"
                 }
             }

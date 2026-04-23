@@ -11,15 +11,14 @@ type Genre struct {
 	ID          uint           `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name        string         `json:"name" gorm:"size:100;not null;uniqueIndex"`
 	Description string         `json:"description" gorm:"type:text;not null"`
-	Color       *string        `json:"color" gorm:"size:7"` // Hex color code (e.g., #FF5733)
+	Color       *string        `json:"color" gorm:"size:7"`         // Hex color code (e.g., #FF5733)
 	Background  *string        `json:"background" gorm:"type:text"` // Background image URL or path
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index" swag:"-"`
 }
 
 // TableName mengembalikan nama tabel
 func (Genre) TableName() string {
 	return "genres"
 }
-

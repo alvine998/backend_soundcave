@@ -30,7 +30,7 @@ type Album struct {
 	Image       *string        `json:"image" gorm:"size:255"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index" swag:"-"`
 }
 
 // TableName mengembalikan nama tabel

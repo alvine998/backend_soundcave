@@ -1,13 +1,5 @@
 basePath: /api
 definitions:
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
   handlers.ApproveMusicRequest:
     properties:
       user_id:
@@ -449,6 +441,10 @@ definitions:
     properties:
       description:
         type: string
+      scheduled_at:
+        type: string
+      thumbnail:
+        type: string
       title:
         type: string
     required:
@@ -770,38 +766,23 @@ definitions:
       role:
         type: string
     type: object
-  models.Podcast:
+  handlers.srsCallbackBody:
     properties:
-      category:
+      action:
         type: string
-      created_at:
+      app:
         type: string
-      deleted_at:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
+      client_id:
         type: string
-      duration:
-        description: 'Format: MM:SS atau HH:MM:SS'
+      ip:
         type: string
-      episode_number:
-        type: integer
-      host:
+      param:
+        description: query params, e.g. "?secret=xxx"
         type: string
-      id:
-        type: integer
-      release_date:
+      stream:
+        description: stream key
         type: string
-      season:
-        type: integer
-      thumbnail:
-        type: string
-      title:
-        type: string
-      total_stream:
-        type: integer
-      updated_at:
-        type: string
-      video_url:
+      vhost:
         type: string
     type: object
 info:
@@ -1469,6 +1450,54 @@ paths:
       security:
       - BearerAuth: []
       summary: End live stream
+      tags:
+      - ArtistStreams
+  /artist-streams/history:
+    get:
+      consumes:
+      - application/json
+      description: Get history of artist streams with pagination and filters for status
+        and artist
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Stream status filter (scheduled, live, ended)
+        in: query
+        name: status
+        type: string
+      - description: Artist ID filter
+        in: query
+        name: artist_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get artist stream history
       tags:
       - ArtistStreams
   /artist-streams/start:
@@ -4928,7 +4957,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Podcast'
+            additionalProperties: true
+            type: object
         "401":
           description: Unauthorized
           schema:
@@ -4971,7 +5001,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Podcast'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -5112,6 +5143,79 @@ paths:
       summary: Get user profile
       tags:
       - Auth
+  /srs/on_publish:
+    post:
+      consumes:
+      - application/json
+      description: Called by SRS when a stream publisher connects. Marks stream as
+        live.
+      parameters:
+      - description: SRS callback payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.srsCallbackBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: SRS on_publish callback
+      tags:
+      - SRS Webhooks
+  /srs/on_unpublish:
+    post:
+      consumes:
+      - application/json
+      description: Called by SRS when a stream publisher disconnects. Marks stream
+        as ended.
+      parameters:
+      - description: SRS callback payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.srsCallbackBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: SRS on_unpublish callback
+      tags:
+      - SRS Webhooks
   /subscription-plans:
     get:
       consumes:
