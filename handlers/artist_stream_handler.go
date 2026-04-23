@@ -239,6 +239,90 @@ func StartStreamHandler(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
+// MarkStreamLiveHandler marks a pending stream as live after the client
+// successfully establishes a WebRTC/WHIP connection to SRS.
+// Used as a reliable fallback when SRS http_hooks are not triggered for WebRTC.
+// @Summary      Mark stream as live
+// @Description  Mark a pending stream as live after successful WHIP/WebRTC connection. Called by the frontend immediately after WHIP broadcast starts.
+// @Tags         ArtistStreams
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Stream ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      403  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Failure      409  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /artist-streams/{id}/mark-live [post]
+func MarkStreamLiveHandler(c *fiber.Ctx, db *gorm.DB) error {
+	id := c.Params("id")
+	userID := c.Locals("user_id").(uint)
+
+	var stream models.ArtistStream
+	if err := db.Preload("Artist").First(&stream, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "Stream tidak ditemukan",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengambil data stream",
+			"error":   err.Error(),
+		})
+	}
+
+	// Only the stream owner or admin can mark it live
+	isOwner := stream.Artist.RefUserID != nil && *stream.Artist.RefUserID == userID
+	var user models.User
+	if err := db.First(&user, userID).Error; err == nil {
+		if !isOwner && user.Role != models.RoleAdmin {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"success": false,
+				"message": "Anda tidak memiliki akses untuk mengubah status stream ini",
+			})
+		}
+	}
+
+	if stream.Status == models.StreamStatusLive {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"success": false,
+			"message": "Stream sudah dalam status live",
+			"data":    stream,
+		})
+	}
+	if stream.Status == models.StreamStatusEnded {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"success": false,
+			"message": "Stream sudah berakhir dan tidak dapat diaktifkan kembali",
+			"data":    stream,
+		})
+	}
+
+	now := time.Now()
+	if err := db.Model(&stream).Updates(map[string]interface{}{
+		"status":     models.StreamStatusLive,
+		"started_at": now,
+	}).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengubah status stream",
+			"error":   err.Error(),
+		})
+	}
+
+	stream.Status = models.StreamStatusLive
+	stream.StartedAt = &now
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Stream berhasil ditandai sebagai live",
+		"data":    stream,
+	})
+}
+
 // EndStreamHandler menangani artist mengakhiri streaming
 // @Summary      End live stream
 // @Description  End an active live stream for an artist

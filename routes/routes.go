@@ -413,6 +413,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, firebaseApp *firebase.App) {
 	artistStreams.Post("/start", func(c *fiber.Ctx) error {
 		return handlers.StartStreamHandler(c, db)
 	})
+	artistStreams.Post("/:id/mark-live", func(c *fiber.Ctx) error {
+		return handlers.MarkStreamLiveHandler(c, db)
+	})
 	artistStreams.Post("/end/:id", func(c *fiber.Ctx) error {
 		return handlers.EndStreamHandler(c, db)
 	})
